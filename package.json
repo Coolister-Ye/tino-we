@@ -1,0 +1,22 @@
+{
+  "name": "play-together",
+  "version": "1.0.0",
+  "description": "play-together-app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Coolister-Ye/play-together.git"
+  },
+  "author": "Coolister-Ye",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Coolister-Ye/play-together/issues"
+  },
+  "homepage": "https://github.com/Coolister-Ye/play-together#readme",
+  "dependencies": {
+    "@vant/weapp": "^1.6.8"
+  }
+}

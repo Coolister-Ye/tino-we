@@ -1,0 +1,19 @@
+<!--components/navi-tabs.wxml-->
+<text>components/navi-tabs.wxml</text>
+<view navi-tabs-wrap>
+  <scroll-view scroll-x="{{ scrollable }}" scroll-with-animation class="navi-tabs-scroll">
+    <view class="navi-tabs-block">
+      <view wx:for="{{ navi-tabs }}" wx:key="index" data-index="{{ index }}" class="navi-tab">
+        <navi-icon name="{{ icon-name }}"></navi-icon>
+        <view>{{ item.navi-tab-name }}</view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<view class="navi-content">
+  <view class="navi-track">
+    <slot></slot>
+  </view>
+</view>
+ 

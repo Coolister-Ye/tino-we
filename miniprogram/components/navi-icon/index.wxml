@@ -1,0 +1,5 @@
+<!--components/navi-icons/index.wxml-->
+<wxs src="./index.wxs" module="computed"></wxs>
+<text>components/navi-icons/index.wxml</text>
+<icon class="{{ computed.addClass(name) }}"></icon>
+

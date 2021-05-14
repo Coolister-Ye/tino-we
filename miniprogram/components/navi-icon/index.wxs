@@ -1,0 +1,10 @@
+/* create icon class name */
+function addClass(data){
+  var classes = ['iconfont'];
+  classes.push(data.name);
+  return classes.join(' ');
+}
+
+module.exports = {
+  "addClass": addClass
+};
