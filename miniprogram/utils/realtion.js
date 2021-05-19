@@ -48,16 +48,17 @@ function getChildren(name, onEffect) {
       onEffect && onEffect(target)
     }
   }
-
-  relation['Behavior'] = Behavior({
-    created: function() {
-      Object.defineProperty(this, 'children', {
-        get: function() {
-          return this.getRelationNodes(path) || []
-        }
-      })
-    }
-  })
+  return relation
 }
 
-export {getParents, getChildren}
+let getChildrenBehavior = Behavior({
+  created: function() {
+    Object.defineProperty(this, 'children', {
+      get: function() {
+        return this.getRelationNodes(path) || []
+      }
+    })
+  }
+});
+
+export {getParents, getChildren, getChildrenBehavior}

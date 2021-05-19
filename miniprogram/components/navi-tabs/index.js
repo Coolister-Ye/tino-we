@@ -1,7 +1,9 @@
 // components/navi-tabs.js
-import {getParents, getChildren} from '../../utils/realtion'
+import {getParents, getChildren, getChildrenBehavior} from '../../utils/realtion'
 
 Component({
+  behaviors: [getChildrenBehavior],
+  
   /**
    * Component properties
    */
