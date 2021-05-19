@@ -24,6 +24,7 @@
   },
   "sitemapLocation": "sitemap.json",
   "usingComponents": {
-    "navi-tabs": "./components/navi-tabs/index"
+    "navi-tabs": "./components/navi-tabs/index",
+    "navi-tab": "./components/navi-tab/index"
   }
 }
