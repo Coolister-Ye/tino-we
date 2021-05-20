@@ -1,3 +1,5 @@
 <!--pages/play-together/index.wxml-->
 <text>pages/play-together/index.wxml</text>
-<navi-tabs></navi-tabs>
+<navi-tabs>
+  <navi-tab></navi-tab>
+</navi-tabs>
