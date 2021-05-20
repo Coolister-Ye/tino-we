@@ -4,34 +4,32 @@ import {getChildren, getChildrenBehavior} from '../../utils/realtion'
 Component({
   behaviors: [getChildrenBehavior('navi-tab')],
 
+  relations: getChildren('navi-tab', function() {
+    this.updateTabs()
+  }),
+
   /**
    * Component properties
    */
-  behaviors: [getParentsBehaviors],
-
   properties: {
 
-  },
-
-  relations: getChildren('navi-tab', function() {
-    this.updateNaviTabs()
-  }),
+  }, 
 
   /**
    * Component initial data
    */
   data: {
-    naviTabs: []
+    tabs: []
   },
 
   /**
    * Component methods
    */
   methods: {
-    updateNaviTabs() {
+    updateTabs() {
       const { children = [], data } = this;
       this.setData({
-        naviTabs: children.map((child) => child.data),
+        tabs: children.map((child) => child.data),
       });
       // this.setCurrentIndexByName(data.active || this.getCurrentName());
     },
@@ -42,9 +40,9 @@ Component({
     // }
   },
 
-  // lifetimes: {
-  //   ready: function() {
-  //     this._getAllChildren()
-  //   }
-  // }
+  lifetimes: {
+    ready: function() {
+      console.log(this.data.tabs);
+    }
+  }
 })

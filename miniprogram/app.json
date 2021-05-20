@@ -25,6 +25,8 @@
   "sitemapLocation": "sitemap.json",
   "usingComponents": {
     "navi-tabs": "./components/navi-tabs/index",
-    "navi-tab": "./components/navi-tab/index"
+    "navi-tab": "./components/navi-tab/index",
+    "van-tabs": "./miniprogram_npm/@vant/weapp/tabs",
+    "van-tab": "./miniprogram_npm/@vant/weapp/tab"
   }
 }

@@ -1,7 +1,7 @@
 /* create icon class name */
-function addClass(data){
+function addClass(name){
   var classes = ['iconfont'];
-  classes.push(data.name);
+  classes.push(name);
   return classes.join(' ');
 }
 

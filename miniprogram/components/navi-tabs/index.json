@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "navi-icon": "../navi-tabs/index"
+    "navi-icon": "../navi-icon/index"
   }
 }

@@ -3,9 +3,9 @@
 <view navi-tabs-wrap>
   <scroll-view scroll-x="{{ scrollable }}" scroll-with-animation class="navi-tabs-scroll">
     <view class="navi-tabs-block">
-      <view wx:for="{{ navi-tabs }}" wx:key="index" data-index="{{ index }}" class="navi-tab">
-        <navi-icon name="{{ icon-name }}"></navi-icon>
-        <view>{{ item.navi-tab-name }}</view>
+      <view wx:for="{{ tabs }}" wx:key="index" data-index="{{ index }}" class="navi-tab">
+        <navi-icon name="{{ item.iconName }}"></navi-icon>
+        <view>{{ item.title }}</view>
       </view>
     </view>
   </scroll-view>
