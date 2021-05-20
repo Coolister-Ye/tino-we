@@ -20,15 +20,15 @@ function getParents(name, onEffect) {
         get: function() {
           return this.getRelationNodes(path)[0];
         }
-      })
-    }
-  })
+      });
 
-  Object.defineProperty(this, 'index', {
-    get: function() {
-      let _a = this.parent
-      let _b = _a === null || _a === void 0 ? void 0 : _a.children
-      return _b === null || _b === void 0 ? void 0 : _b.indexOf(this)
+      Object.defineProperty(this, 'index', {
+        get: function() {
+          let _a = this.parent
+          let _b = _a === null || _a === void 0 ? void 0 : _a.children
+          return _b === null || _b === void 0 ? void 0 : _b.indexOf(this)
+        }
+      })
     }
   })
 }
@@ -48,8 +48,11 @@ function getChildren(name, onEffect) {
       onEffect && onEffect(target)
     }
   }
+  return relation
+}
 
-  relation['Behavior'] = Behavior({
+function getParentsBehaviors(name) {
+  return Behavior({
     created: function() {
       Object.defineProperty(this, 'children', {
         get: function() {
@@ -60,4 +63,4 @@ function getChildren(name, onEffect) {
   })
 }
 
-export {getParents, getChildren}
+export {getParents, getChildren, getParentsBehaviors};

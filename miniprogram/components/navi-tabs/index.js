@@ -1,15 +1,18 @@
 // components/navi-tabs.js
-import {getParents, getChildren} from '../../utils/realtion'
+import {getParents, getChildren, getParentsBehaviors} from '../../utils/realtion'
 
 Component({
   /**
    * Component properties
    */
+  behaviors: [getParentsBehaviors],
+
   properties: {
 
   },
 
-  relations: getChildren('navi-content', function() {
+  relations: getChildren('navi-tab', function() {
+    console.log(this)
     this.updateNaviTabs()
   }),
 
