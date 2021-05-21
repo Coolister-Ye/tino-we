@@ -1,1 +1,21 @@
 /* components/navi-tabs.wxss */
+.navi-tabs {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-user-select: none;
+  user-select: none;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.navi-tab {
+  height: 80%;
+  align-items: center;
+  text-align: center;
+  font-size: xx-small;
+}
+
+.navi-tab--active {
+  font-weight: 500;
+  color: #323233;
+}

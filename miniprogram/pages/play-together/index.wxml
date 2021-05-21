@@ -9,9 +9,9 @@
 </view>
 
 <view>
-  <text>pages/play-together/index.wxml</text>
   <navi-tabs>
     <navi-tab title='content-1' iconName='icon-coffee'>c1</navi-tab>
     <navi-tab title='content-2' iconName='icon-coffee'>c2</navi-tab>
+    <navi-tab title='content-3' iconName='icon-coffee'>c3</navi-tab>
   </navi-tabs>
 </view>

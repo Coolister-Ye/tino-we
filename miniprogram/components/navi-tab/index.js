@@ -23,6 +23,10 @@ Component({
     iconName: {
       type: String,
       observer: 'update'
+    },
+    name :{
+      type: String,
+      value: ''
     }
   },
 
@@ -37,14 +41,12 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    updateRender(active, parent){
-      const {data: parentData} = parent;
-      this.inited = this.inited || active;
-      this.setData({
-        active
-      });
+    getComputedName() {
+      if(this.data.name !== '') {
+        return this.data.name;
+      }
+      return this.index;
     },
-
     update() {
       if(this.parent) {
         this.parent.updateTabs();

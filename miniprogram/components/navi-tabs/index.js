@@ -19,7 +19,8 @@ Component({
    * Component initial data
    */
   data: {
-    tabs: []
+    tabs: [],
+    currentIndex: 0
   },
 
   /**
@@ -31,13 +32,34 @@ Component({
       this.setData({
         tabs: children.map((child) => child.data),
       });
-      // this.setCurrentIndexByName(data.active || this.getCurrentName());
+      this.setCurrentIndexByName(this.getCurrentName());
     },
-
-    // _getAllChildren: function() {
-    //   let nodes = this.getRelationNodes('../navi-tab/index')
-    //   console.log("ALL NODES: ", nodes)
-    // }
+    onTap(event) {
+      const {index} = event.currentTarget.dataset;
+      this.setCurrentIndex(index);
+    },
+    getCurrentName() {
+      const activaTab = this.children[this.data.currentIndex];
+      if(activaTab) {
+        return activaTab.getComputedName();
+      }
+    },
+    setCurrentIndexByName(name) {
+      const {children = []} = this;
+      const matched = children.filter(
+        (child) => child.getComputedName() === name
+      );
+      if(matched.length) {
+        this.setCurrentIndex(matched[0].index);
+      }
+    },
+    setCurrentIndex(currentIndex) {
+      const {data, children = []} = this;
+      if(currentIndex === data.currentIndex) {
+        return;
+      }
+      this.setData({currentIndex});
+    }
   },
 
   lifetimes: {

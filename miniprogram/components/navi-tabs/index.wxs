@@ -1,0 +1,8 @@
+function combineClass(baseClass, addClass) {
+  var allClass = baseClass.concat(addClass);
+  return allClass.join(' ');
+}
+
+module.export = {
+  combineClass: combineClass
+}
