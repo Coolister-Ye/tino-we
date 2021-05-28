@@ -1,8 +1,25 @@
-function combineClass(baseClass, addClass) {
-  var allClass = baseClass.concat(addClass);
-  return allClass.join(' ');
+var style = require('../../utils/style.wxs')
+
+function tabClass(active) {
+  var classes = ['navi-tab'];
+  if(active) {
+    classes.push('navi-tab-active');
+  }
+  return classes.join(' ');
 }
 
-module.export = {
-  combineClass: combineClass
+function lineStyle(data, unit = 'px') {
+  return style({
+    width: data.lineWidth + unit,
+    transform: 'translateX(' + data.lineOffsetLeft + unit + ')',
+    '-webkit-transform': 'translateX(' + data.lineOffsetLeft + unit + ')',
+    height: data.lineHeight !== -1 ? data.lineHeight + unit : null,
+    'transition-duration': data.duration + 's',
+    '-webkit-transition-duration': data.duration + 's'
+  });
 }
+
+module.exports = {
+  tabClass: tabClass,
+  lineStyle: lineStyle
+};

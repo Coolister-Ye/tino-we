@@ -6,6 +6,7 @@
   user-select: none;
   flex-wrap: wrap;
   justify-content: space-evenly;
+  position: relative;
 }
 
 .navi-tab {
@@ -13,9 +14,24 @@
   align-items: center;
   text-align: center;
   font-size: xx-small;
+  color: #646566;
 }
 
-.navi-tab--active {
-  font-weight: 500;
+.navi-tab-active {
+  font-weight: 700;
   color: #323233;
+}
+
+.navi-tab-title {
+  line-height: 30px;
+}
+
+.navi-tabs-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  height: 3px;
+  border-radius: 3px;
+  background-color: #ee0a24;
 }

@@ -1,0 +1,11 @@
+function combineClass(baseClass, addClass) {
+  var classes = [baseClass];
+  if(addClass && addClass.constructer === 'array') {
+    classes = classes.concat(addClass);
+  } else if(addClass && typeof addClass === 'string') {
+    classes.push(baseClass);
+  } else if(addClass && addClass.constructor === 'Object') {
+    return;
+  }
+  return classes.join(' ');
+}
