@@ -6,7 +6,7 @@ Component({
   behaviors: [getChildrenBehavior('navi-tab')],
 
   relations: getChildren('navi-tab', function() {
-    this.updateTabs()
+    this.updateTabs();
   }),
 
   /**
@@ -34,7 +34,8 @@ Component({
   data: {
     tabs: [],
     currentIndex: 0,
-    lineOffsetLeft: 0
+    lineOffsetLeft: 0,
+    scrollLeft: 0
   },
 
   /**
@@ -68,12 +69,19 @@ Component({
       }
     },
     setCurrentIndex(currentIndex) {
-      const {data} = this;
+      const {data, children = []} = this;
+      children.forEach((item, index) => {
+        const active = index === currentIndex;
+        if (active !== item.data.active || !item.inited) {
+          item.updateRender(active, this);
+        }
+      });
       if(currentIndex === data.currentIndex) {
         return;
       }
       this.setData({currentIndex});
       this.resize();
+      this.shift();
     },
     resize() {
       const {currentIndex} = this.data;
@@ -91,7 +99,17 @@ Component({
           lineOffsetLeft
         }); 
       })
-    }
+    },
+    shift() {
+      const {currentIndex} = this.data;
+      getRect(this, '.navi-track').then(rect => {
+        const contentWidth = rect.width;
+        const scrollLeft = currentIndex * contentWidth;
+        this.setData({
+          scrollLeft
+        });
+      });
+    },
   },
 
   lifetimes: {

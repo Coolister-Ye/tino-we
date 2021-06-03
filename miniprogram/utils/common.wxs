@@ -1,3 +1,5 @@
+var Object = require('./object.wxs');
+
 function combineClass(baseClass, addClass) {
   var classes = [baseClass];
   if(addClass && addClass.constructer === 'array') {
@@ -5,7 +7,15 @@ function combineClass(baseClass, addClass) {
   } else if(addClass && typeof addClass === 'string') {
     classes.push(baseClass);
   } else if(addClass && addClass.constructor === 'Object') {
-    return;
+    Object.keys(addClass).forEach(function(key) {
+      if(addClass[key]) {
+        classes.push(baseClass + '-' + key);
+      }
+    })
   }
   return classes.join(' ');
+}
+
+module.exports = {
+  combineClass: combineClass
 }

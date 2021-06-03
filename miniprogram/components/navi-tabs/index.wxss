@@ -35,3 +35,12 @@
   border-radius: 3px;
   background-color: #ee0a24;
 }
+
+.navi-content {
+  overflow: hidden;
+}
+
+.navi-track {
+  white-space: nowrap;
+  width: 100%;
+}

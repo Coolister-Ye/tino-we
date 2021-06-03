@@ -1,1 +1,28 @@
 /* components/navi-tab/index.wxss */
+
+:host {
+  display: inline-block;
+  width: 100%;
+  height: auto;
+}
+
+.feeds-wrap {
+  display: flex;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.feed-wrap {
+  width: 150px;
+  height: 200px;
+  background-color: #eeeeee;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-line;
+}
+
+.feed-image {
+  width: 100rpx;
+  height: 100rpx;
+}

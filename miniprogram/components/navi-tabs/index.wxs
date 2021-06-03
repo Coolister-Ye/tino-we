@@ -19,7 +19,16 @@ function lineStyle(data, unit = 'px') {
   });
 }
 
+function trackStyle(data) {
+  return style({
+    left: -100 * data.currentIndex + '%',
+    'transition-duration': data.duration + 's',
+    '-webkit-transition-duration': data.duration + 's'
+  });
+}
+
 module.exports = {
   tabClass: tabClass,
-  lineStyle: lineStyle
+  lineStyle: lineStyle,
+  trackStyle: trackStyle
 };

@@ -34,7 +34,30 @@ Component({
    * 组件的初始数据
    */
   data: {
-    active: false
+    active: false,
+    feeds: [{
+        src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
+        title: 'aaaaasdasdawdasdwawdqdwqwqdwdqdwdadwadwadsacxzcxzcasdwads'
+      },{
+        src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
+        title: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+      },{
+        src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
+        title: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+      },{
+        src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
+        title: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+      },{
+        src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
+        title: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+      },{
+        src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
+        title: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+      },{
+        src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
+        title: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+      }
+    ]
   },
 
   /**
@@ -46,6 +69,13 @@ Component({
         return this.data.name;
       }
       return this.index;
+    },
+    updateRender(active, parent) {
+      this.setData({
+        active,
+        shouldRender: active,
+        shouldShow: active,
+      });
     },
     update() {
       if(this.parent) {

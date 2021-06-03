@@ -13,8 +13,8 @@
 </view>
 
 <view class="navi-content">
-  <view class="navi-track">
+  <scroll-view scroll-x scroll-with-animation enhanced scroll-left="{{scrollLeft}}" bind:dragend="dargEnd" class="navi-track">
     <slot></slot>
-  </view>
+  </scroll-view>
 </view>
  
