@@ -1,3 +1,5 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "waterfall": "../../components/waterfall-layout/index"
+  }
 }

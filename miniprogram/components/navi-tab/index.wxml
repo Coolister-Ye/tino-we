@@ -1,12 +1,13 @@
 <!--components/navi-tab/index.wxml-->
 <wxs src='../../utils/common.wxs' module='utils'></wxs>
 <!-- <view class="{{ utils.combineClass('tab-pane', {active}) }}" style="{{ shouldShow ? '' : 'display: none'}}"> -->
-<view class="feeds-wrap">
-  <!-- <slot wx:if="{{ shouldRender }}"></slot> -->
-  <view wx:for="{{ feeds }}" class="feed-wrap">
+<!-- <view class="feeds-wrap">
+  <slot wx:if="{{ shouldRender }}"></slot> -->
+  <!-- <view wx:for="{{ feeds }}" class="feed-wrap">
     <view class="image-wrap">
       <image mode="scaleToFill" src="{{ item.src }}" class="feed-image"></image>
     </view>
     <view class="text-wrap">{{ item.title }}</view>
   </view>
-</view>
+</view> -->
+<slot></slot>

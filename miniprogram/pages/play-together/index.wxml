@@ -6,3 +6,4 @@
     <navi-tab title='content-3' iconName='icon-coffee'>c3</navi-tab>
   </navi-tabs>
 </view>
+<waterfall class="waterfall"></waterfall>

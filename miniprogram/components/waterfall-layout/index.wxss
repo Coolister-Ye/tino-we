@@ -1,0 +1,25 @@
+/* components/waterfall-layout/index.wxss */
+.waterfall {
+  display: block;
+  position: relative;
+  background-color: rgb(236, 227, 227);
+  overflow: hidden;
+}
+
+.waterfall__left {
+  float: left;
+}
+
+.waterfall__right {
+  float: right;
+  min-height: 100rpx;
+}
+
+.waterfall__observer {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  background-color: red;
+  width: 100%;
+  height: 2px;
+}

@@ -12,7 +12,14 @@ Page({
    * Lifecycle function--Called when page load
    */
   onLoad: function (options) {
-
+    function repeat(str, num) {
+      return str;
+    }
+    const feeds = [];
+    for(let i=0; i<10; i++) {
+      feeds.push({message: 'a'.repeat(Math.floor((Math.random()*100)+1))});
+    }
+    this.selectComponent(".waterfall").render(feeds);
   },
 
   /**

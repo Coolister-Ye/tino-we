@@ -35,12 +35,13 @@ Component({
    */
   data: {
     active: false,
+    gap: 20,
     feeds: [{
         src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
-        title: 'aaaaasdasdawdasdwawdqdwqwqdwdqdwdadwadwadsacxzcxzcasdwads'
+        title: 'aaa'
       },{
         src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
-        title: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+        title: 'aaa'
       },{
         src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
         title: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
