@@ -1,0 +1,15 @@
+<!--miniprogram/pages/ping-together/index.wxml-->
+<view class="header">
+  <text>Dear Customer, Hi~</text>
+  <text>Get Start by ping-together!</text>
+</view>
+<view class="input-form">
+  <van-cell-group>
+    <van-cell title="项目" value="单选" is-link></van-cell>
+    <van-cell title="场地" value="多选" is-link></van-cell>
+    <van-cell title="日期（可多选）" value="{{ date }}" bind:click="onDisplay" is-link data-name="date-picker"></van-cell>
+    <van-calendar show="{{ showDatePicker }}" type="multiple" bind:close="onClose" bind:confirm="onConfirm"></van-calendar>
+    <van-cell title="时段" bind:click="onDisplay" data-name="time-picker" is-link></van-cell>
+    <van-popup show="{{ showTimePicker }}" bind:close="onClose">内容</van-popup>
+  </van-cell-group>
+</view>
