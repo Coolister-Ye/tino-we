@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/ping-together/index",
     "pages/play-together/index",
     "pages/index/index",
     "pages/userConsole/userConsole",
@@ -29,6 +30,13 @@
     "navi-tab": "./components/navi-tab/index",
     "van-tabbar": "./miniprogram_npm/@vant/weapp/tabbar",
     "van-tabbar-item": "./miniprogram_npm/@vant/weapp/tabbar-item",
-    "footer": "./components/footer/index"
+    "footer": "./components/footer/index",
+    "van-tabs": "./miniprogram_npm/@vant/weapp/tabs",
+    "van-tab": "./miniprogram_npm/@vant/weapp/tab",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-calendar": "@vant/weapp/calendar/index",
+    "van-datetime-picker": "@vant/weapp/datetime-picker/index",
+    "van-popup": "@vant/weapp/popup/index"
   }
 }

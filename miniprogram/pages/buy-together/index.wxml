@@ -1,2 +1,3 @@
 <!--miniprogram/pages/buy-together/index.wxml-->
-<text>miniprogram/pages/buy-together/index.wxml</text>
+<view class="header">header</view>
+<view></view>
