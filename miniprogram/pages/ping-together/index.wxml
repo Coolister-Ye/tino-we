@@ -1,15 +1,46 @@
 <!--miniprogram/pages/ping-together/index.wxml-->
 <view class="header">
-  <text>Dear Customer, Hi~</text>
-  <text>Get Start by ping-together!</text>
+  <!-- <image src="{{ headerImageSrc }}" mode="aspectFill" class="header-image"></image> -->
+  <view class="header-image"></view>
+  <!-- <text>Dear Customer, Hi~</text>
+  <text>Get Start by ping-together!</text> -->
 </view>
-<view class="input-form">
-  <van-cell-group>
-    <van-cell title="项目" value="单选" is-link></van-cell>
-    <van-cell title="场地" value="多选" is-link></van-cell>
-    <van-cell title="日期（可多选）" value="{{ date }}" bind:click="onDisplay" is-link data-name="date-picker"></van-cell>
-    <van-calendar show="{{ showDatePicker }}" type="multiple" bind:close="onClose" bind:confirm="onConfirm"></van-calendar>
-    <van-cell title="时段" bind:click="onDisplay" data-name="time-picker" is-link></van-cell>
-    <van-popup show="{{ showTimePicker }}" bind:close="onClose">内容</van-popup>
-  </van-cell-group>
+<view>
+  <view class="input-form">
+    <van-cell-group>
+      <!-- activity and location -->
+      <van-cell title="项目" value="单选" is-link></van-cell>
+      <van-cell title="场地" value="多选" is-link></van-cell>
+      <!-- date -->
+      <van-cell title="日期（可多选）" value="{{ date }}" bind:click="onDisplay" is-link data-name="date-picker"></van-cell>
+      <van-calendar 
+        show="{{ showDatePicker }}" 
+        type="multiple" 
+        bind:close="onClose" 
+        bind:confirm="onConfirm"
+      />
+      <!-- begin time -->
+      <van-cell title="开始时间" bind:click="onDisplay" data-name="start-time-picker" is-link></van-cell>
+      <van-popup show="{{ showStartTimePicker }}" position="bottom" bind:close="onClose">
+        <van-datetime-picker
+          type="time"
+          value="{{ currentDate }}"
+          min-hour="{{ minHour }}"
+          max-hour="{{ maxHour }}"
+          bind:input="onInput"
+        />
+      </van-popup>
+      <!-- end time -->
+      <van-cell title="结束时间" bind:click="onDisplay" data-name="end-time-picker" is-link></van-cell>
+      <van-popup show="{{ showEndRTimeRicker }}" position="bottom" bind:close="onClose">
+        <van-datetime-picker
+          type="time"
+          value="{{ currentDate }}"
+          min-hour="{{ minHour }}"
+          max-hour="{{ maxHour }}"
+          bind:input="onInput"
+        />
+      </van-popup>
+    </van-cell-group>
+  </view>
 </view>

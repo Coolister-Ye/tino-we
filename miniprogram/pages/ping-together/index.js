@@ -7,26 +7,31 @@ Page({
   data: {
     date: '',
     showDatePicker: false,
-    showTimePicker: false
+    showStartTimePicker: false,
+    showEndRTimeRicker: false,
+    currentDate: '12:00',
+    minHour: 8,
+    maxHour: 22,
+    headerImageSrc: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
   },
 
   onDisplay({currentTarget: {dataset: {name}}}) {
     if (name === 'date-picker') {
       this.setData({ showDatePicker: true });
-    } else if (name === 'time-picker') {
-      this.setData({ showTimePicker: true });
+    } else if (name === 'start-time-picker') {
+      this.setData({ showStartTimePicker: true });
+    } else if (name === 'end-time-picker') {
+      this.setData({ showEndRTimeRicker: true});
     }
   },
   onClose({currentTarget: {dataset: {name}}}) {
     if (name === 'date-picker') {
       this.setData({ showDatePicker: false });
-    } else if (name === 'time-picker') {
-      this.setData({ showTimePicker: false });
+    } else if (name === 'start-time-picker') {
+      this.setData({ showStartTimePicker: false });
+    } else if (name === 'end-time-picker') {
+      this.setData({ showEndRTimeRicker: false});
     }
-  },
-  formatDate(date) {
-    date = new Date(date);
-    return `${date.getMonth() + 1}月${date.getDate()}日`;
   },
   onConfirm(event) {
     this.setData({
