@@ -1,9 +1,15 @@
 <!--pages/play-together/index.wxml-->
-<view>
-  <navi-tabs>
-    <navi-tab title='content-1' iconName='icon-coffee'>c1</navi-tab>
-    <navi-tab title='content-2' iconName='icon-coffee'>c2</navi-tab>
-    <navi-tab title='content-3' iconName='icon-coffee'>c3</navi-tab>
+<view class="page-wrapper">
+  <navi-tabs class="main-page-wrapper">
+    <navi-tab title='content-1' iconName='icon-coffee'>
+      <waterfall generic:layout="navi-item" class="waterfall"></waterfall>
+    </navi-tab>
+    <navi-tab title='content-2' iconName='icon-coffee'>
+      <waterfall generic:layout="navi-item" class="waterfall"></waterfall>
+    </navi-tab>
+    <navi-tab title='content-3' iconName='icon-coffee'>
+      <waterfall generic:layout="navi-item" class="waterfall"></waterfall>
+    </navi-tab>
   </navi-tabs>
+  <footer class="footer-wrapper"></footer>
 </view>
-<waterfall class="waterfall"></waterfall>

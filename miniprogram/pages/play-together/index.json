@@ -1,5 +1,6 @@
 {
   "usingComponents": {
-    "waterfall": "../../components/waterfall-layout/index"
+    "waterfall": "../../components/waterfall-layout/index",
+    "navi-item": "../../components/navi-item/index"
   }
 }
