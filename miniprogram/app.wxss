@@ -1,4 +1,6 @@
 /**app.wxss**/
+@import '@vant/weapp/common/index.wxss';
+
 .container {
   display: flex;
   flex-direction: column;

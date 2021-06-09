@@ -12,7 +12,17 @@ Page({
     currentDate: '12:00',
     minHour: 8,
     maxHour: 22,
-    headerImageSrc: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+    headerImageSrc: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
+    duration: [{
+      value: 1,
+      message: "1小时"
+    },{
+      value: 1.5,
+      message: "1.5小时"
+    },{
+      value: 2,
+      message: "2小时"
+    }]
   },
 
   onDisplay({currentTarget: {dataset: {name}}}) {
