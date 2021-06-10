@@ -1,4 +1,6 @@
 /* miniprogram/pages/ping-together/index.wxss */
+@import '../../miniprogram_npm/@vant/weapp/common/index.wxss';
+
 .header {
   width: 100%;
   height: 300rpx;
@@ -23,6 +25,7 @@
   top: -30rpx;
   background-color: #F6F6F6;
   padding: 15px;
+  margin-bottom: 100rpx;
 }
 
 .input-form {
@@ -34,26 +37,61 @@
 }
 
 .header-image {
-  height: 80px;
-  width: 80px;
-  border-radius: 40px;
+  height: 60px;
+  width: 60px;
+  border-radius: 30px;
   margin-left: 15px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #ffffff;
 }
 
 .header-text {
-  font-size: smaller;
-  font-weight: 3;
+  color: #ffffff;
   margin-left: 15px;
 }
 
-.duration-wrapper {
-  display: flex;
-  width: 100%;
-  justify-content: center;
+.h1 {
+  font-size: 40rpx;
+  font-weight: 3;
 }
 
-.duration-item {
+.h2 {
+  font-size: 25rpx;
+  font-weight: 2;
+}
+
+.duration-wrapper {
+  margin-bottom: 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.box-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.box-item {
+  padding: 10rpx;
+  text-align: center;
   border-style: solid;
-  border-width:1px;
-  width: 30%;
+  border-radius: 10rpx;
+  border-width: 1rpx;
+  width: 25%;
+  font-size: xx-small;
+}
+
+.deadline-info {
+  padding: 10rpx;
+  border-radius: 10rpx;
+  font-size: xx-small;
+  background-color: rgba(235, 243, 235, 0.76);
+}
+
+.deadline-wrapper {
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
 }

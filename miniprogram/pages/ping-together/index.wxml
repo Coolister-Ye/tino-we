@@ -2,8 +2,8 @@
 <view class="header">
   <image src="{{ headerImageSrc }}" class="header-image"></image>
   <view class="header-text">
-    <view>Dear Customer, Hi~</view>
-    <view>Get Start by ping-together!</view>
+    <view class="h1">Dear Customer, Hi~</view>
+    <view class="h2">Get Start by ping-together!</view>
   </view>
 </view>
 <view class="main round">
@@ -46,10 +46,29 @@
         />
       </van-popup>
       <!-- duration -->
-      <van-cell title="活动时长" value="单选"></van-cell>
-      <view class="duration-wrapper">
-        <view wx:for="{{ duration }}" wx:key="index" class="duration-item">{{ item.message }}</view>
-      </view>
+      <van-cell center title="活动时长（小时）" border="{{ false }}">
+        <van-stepper slot="" value="{{ 1 }}" bind:change="onChange" />
+      </van-cell>
     </van-cell-group>
   </view>
+  <view class="input-form round gap">
+      <van-field
+        value="{{ value }}"
+        placeholder="请输入手机"
+        border="{{ false }}"
+        bind:change="onChange"
+        label="手机"
+      />
+  </view>
+  <view class="input-form round gap deadline-wrapper">
+    <view>截止日期</view>
+    <view class="box-wrapper gap">
+      <view wx:for="{{ deadline }}" wx:key="index" class="box-item">{{ item.info }}</view>
+    </view>
+    <view class="deadline-info gap">拼单将会在设置的最晚日期的前停止</view>
+  </view>
 </view>
+<van-submit-bar
+  button-text="提交订单"
+  bind:submit="onSubmit"
+/>

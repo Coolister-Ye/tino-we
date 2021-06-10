@@ -13,16 +13,18 @@ Page({
     minHour: 8,
     maxHour: 22,
     headerImageSrc: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg',
-    duration: [{
+    duration: {
+      min: 0.5,
+      max: 3,
       value: 1,
-      message: "1小时"
-    },{
-      value: 1.5,
-      message: "1.5小时"
-    },{
-      value: 2,
-      message: "2小时"
-    }]
+      step: 0.5,
+      activeColor: 'green'
+    },
+    deadline: [
+      {info: '12小时前'},
+      {info: '24小时前'},
+      {info: '48小时前'},
+    ]
   },
 
   onDisplay({currentTarget: {dataset: {name}}}) {
