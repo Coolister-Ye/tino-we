@@ -24,7 +24,11 @@ Page({
       {info: '12小时前'},
       {info: '24小时前'},
       {info: '48小时前'},
-    ]
+    ],
+    header: {
+      textFirst: '早上好，亲爱的朋友～',
+      textSecond: '快来一起流汗吧！'
+    }
   },
 
   onDisplay({currentTarget: {dataset: {name}}}) {
@@ -52,11 +56,30 @@ Page({
     });
   },
 
+  updateHeaderText(suffix = '亲爱的朋友～') {
+    let date = new Date();
+    let hour = date.getHours();
+    var text = '';
+    if (hour >= 6 && hour < 12) {
+      text = '早上好';
+    } else if (hour >= 12 && hour < 19) {
+      text = '下午好';
+    } else if (hour >= 19 && hour < 24) {
+      text = '晚上好';
+    } else {
+      text = '夜深了';
+    }
+    this.data.header.textFirst = text + '，' + suffix;
+  },
+
   /**
    * Lifecycle function--Called when page load
    */
   onLoad: function (options) {
-
+    this.updateHeaderText();
+    this.setData({
+      header: this.data.header
+    });
   },
 
   /**

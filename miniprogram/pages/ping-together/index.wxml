@@ -2,14 +2,17 @@
 <view class="header">
   <image src="{{ headerImageSrc }}" class="header-image"></image>
   <view class="header-text">
-    <view class="h1">Dear Customer, Hi~</view>
-    <view class="h2">Get Start by ping-together!</view>
+    <view class="header-text__first">{{ header.textFirst }}</view>
+    <view class="header-text__second">{{ header.textSecond }}</view>
   </view>
 </view>
-<view class="main round">
+
+<view class="main-page round">
+  <!-- 使用说明 -->
   <view class="input-form round">
     <van-cell title="使用说明" is-link border="{{ false }}"></van-cell>
   </view>
+  <!-- 输入表单 -->
   <view class="input-form round gap">
     <van-cell-group border="{{ false }}">
       <!-- activity and location -->
