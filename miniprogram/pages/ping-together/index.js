@@ -6,6 +6,9 @@ Page({
    */
   data: {
     date: '',
+    activityValue: '',
+    showExplainTab: false,
+    showActivityTab: false,
     showDatePicker: false,
     showStartTimePicker: false,
     showEndRTimeRicker: false,
@@ -28,7 +31,23 @@ Page({
     header: {
       textFirst: '早上好，亲爱的朋友～',
       textSecond: '快来一起流汗吧！'
-    }
+    },
+    explainTabs: [
+      '系统可以同时在多个场地，日期和时间段的组合进行拼单',
+      '系统在订单提交后会在选择的最晚日期+时间段组合的前N个小时（可选）停止拼单，请合理规划行程，避免资源浪费',
+      '订单提交后，后台服务将会持续进行监控和拼单'
+    ],
+    activityActions: [
+      {
+        name: '羽毛球'
+      },
+      {
+        name: '篮球',
+      },
+      {
+        name: '其他活动'
+      }
+    ]
   },
 
   onDisplay({currentTarget: {dataset: {name}}}) {
@@ -37,9 +56,14 @@ Page({
     } else if (name === 'start-time-picker') {
       this.setData({ showStartTimePicker: true });
     } else if (name === 'end-time-picker') {
-      this.setData({ showEndRTimeRicker: true});
+      this.setData({ showEndRTimeRicker: true });
+    } else if (name === 'explainCell') {
+      this.setData({ showExplainTab: true });
+    } else if (name === 'activityCell') {
+      this.setData({ showActivityTab: true });
     }
   },
+  
   onClose({currentTarget: {dataset: {name}}}) {
     if (name === 'date-picker') {
       this.setData({ showDatePicker: false });
@@ -47,8 +71,20 @@ Page({
       this.setData({ showStartTimePicker: false });
     } else if (name === 'end-time-picker') {
       this.setData({ showEndRTimeRicker: false});
+    } else if (name === 'explainPopUp') {
+      this.setData({ showExplainTab: false });
+    } else if (name === 'activityPopUp') {
+      this.setData({ showActivityTab: false });
     }
   },
+
+  onSelect(event) {
+    this.setData({
+      showActivityTab: false,
+      activityValue: event.detail.name
+    });
+  },
+
   onConfirm(event) {
     this.setData({
       show: false,

@@ -10,16 +10,52 @@
 <view class="main-page round">
   <!-- 使用说明 -->
   <view class="input-form round">
-    <van-cell title="使用说明" is-link border="{{ false }}"></van-cell>
+    <van-cell 
+      title="使用说明" 
+      is-link 
+      data-name="explainCell"
+      border="{{ false }}" 
+      bind:click="onDisplay" 
+    />
+    <van-popup 
+      show="{{ showExplainTab }}" 
+      closeable
+      round
+      close-icon="close"
+      custom-style="width: calc(100% - 50rpx);" 
+      bind:close="onClose"
+      data-name="explainPopUp"
+    >
+      <view class="explain-wrapper">
+        <view class="explain-title">使用说明</view>
+        <view wx:for="{{ explainTabs }}" wx:key="index" class="explain-contents"> {{index + 1}}、{{ item }}</view>
+      </view>
+    </van-popup>
   </view>
   <!-- 输入表单 -->
   <view class="input-form round gap">
     <van-cell-group border="{{ false }}">
-      <!-- activity and location -->
-      <van-cell title="项目" value="单选" is-link></van-cell>
+      <!-- activity -->
+      <van-cell title="项目" value="{{ activityValue }}" is-link data-name="activityCell" bind:click="onDisplay"></van-cell>
+      <van-action-sheet
+        show="{{ showActivityTab }}"
+        actions="{{ activityActions }}"
+        data-name="activityPopUp"
+        cancel-text="取消"
+        bind:cancel="onClose"
+        bind:select="onSelect"
+        z-index="999"
+      />
+      <!-- location -->
       <van-cell title="场地" value="多选" is-link></van-cell>
       <!-- date -->
-      <van-cell title="日期（可多选）" value="{{ date }}" bind:click="onDisplay" is-link data-name="date-picker"></van-cell>
+      <van-cell 
+        title="日期（可多选）"  
+        value="{{ date }}" 
+        bind:click="onDisplay" 
+        is-link 
+        data-name="date-picker"
+      />
       <van-calendar 
         show="{{ showDatePicker }}" 
         type="multiple" 
@@ -27,7 +63,12 @@
         bind:confirm="onConfirm"
       />
       <!-- begin time -->
-      <van-cell title="开始时间" bind:click="onDisplay" data-name="start-time-picker" is-link></van-cell>
+      <van-cell 
+        title="开始时间" 
+        bind:click="onDisplay" 
+        data-name="start-time-picker" 
+        is-link
+      />
       <van-popup show="{{ showStartTimePicker }}" position="bottom" bind:close="onClose">
         <van-datetime-picker
           type="time"
@@ -38,7 +79,12 @@
         />
       </van-popup>
       <!-- end time -->
-      <van-cell title="结束时间" bind:click="onDisplay" data-name="end-time-picker" is-link></van-cell>
+      <van-cell 
+        title="结束时间" 
+        bind:click="onDisplay" 
+        data-name="end-time-picker" 
+        is-link
+      />
       <van-popup show="{{ showEndRTimeRicker }}" position="bottom" bind:close="onClose">
         <van-datetime-picker
           type="time"
@@ -54,6 +100,8 @@
       </van-cell>
     </van-cell-group>
   </view>
+
+  <!-- phone -->
   <view class="input-form round gap">
       <van-field
         value="{{ value }}"
@@ -63,14 +111,19 @@
         label="手机"
       />
   </view>
+
+  <!-- Deadline info -->
   <view class="input-form round gap deadline-wrapper">
-    <view>截止日期</view>
+    <view class="deadline-tile">截止日期</view>
     <view class="box-wrapper gap">
       <view wx:for="{{ deadline }}" wx:key="index" class="box-item">{{ item.info }}</view>
     </view>
     <view class="deadline-info gap">拼单将会在设置的最晚日期的前停止</view>
   </view>
+  <van-divider contentPosition="center" custom-style="font-size: 20rpx">没有了～</van-divider>
 </view>
+
+<!-- sumbit -->
 <van-submit-bar
   button-text="提交订单"
   bind:submit="onSubmit"

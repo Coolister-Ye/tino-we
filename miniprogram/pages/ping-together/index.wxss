@@ -12,6 +12,16 @@
   background: linear-gradient(to right, #71B280, #134E5E);
 }
 
+.explain-wrapper {
+  padding: 50rpx;
+  color: #323233;
+  line-height: 2;
+}
+
+.explain-contents {
+  font-size: 20rpx;
+}
+
 .header-text {
   color: #ffffff;
   margin-left: 30rpx;
@@ -62,10 +72,9 @@
   background-color: #ffffff;
 }
 
-.duration-wrapper {
-  margin-bottom: 15px;
-  margin-left: 10px;
-  margin-right: 10px;
+.deadline-wrapper {
+  padding: 30rpx;
+  color: #323233;
 }
 
 .box-wrapper {
@@ -77,22 +86,21 @@
 
 .box-item {
   padding: 10rpx;
+  flex-grow: 1;
   text-align: center;
   border-style: solid;
-  border-radius: 10rpx;
-  border-width: 1rpx;
-  width: 25%;
-  font-size: xx-small;
+  border-radius: 5rpx;
+  border-width: 3rpx;
+  font-size: 20rpx;
+  margin-left: 10rpx;
+  margin-right: 10rpx;
 }
 
 .deadline-info {
-  padding: 10rpx;
+  padding: 20rpx;
   border-radius: 10rpx;
-  font-size: xx-small;
+  font-size: 20rpx;
+  margin-left: 10rpx;
+  margin-right: 10rpx;
   background-color: rgba(235, 243, 235, 0.76);
-}
-
-.deadline-wrapper {
-  padding-top: 20rpx;
-  padding-bottom: 20rpx;
 }
