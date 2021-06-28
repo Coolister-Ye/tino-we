@@ -19,7 +19,7 @@
 }
 
 .explain-contents {
-  font-size: 20rpx;
+  font-size: 25rpx;
 }
 
 .header-text {

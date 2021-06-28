@@ -6,9 +6,12 @@ Page({
    */
   data: {
     date: '',
-    activityValue: '',
+    activity: '',
+    location: '',
     showExplainTab: false,
     showActivityTab: false,
+    showLocationTab:false,
+
     showDatePicker: false,
     showStartTimePicker: false,
     showEndRTimeRicker: false,
@@ -61,6 +64,8 @@ Page({
       this.setData({ showExplainTab: true });
     } else if (name === 'activityCell') {
       this.setData({ showActivityTab: true });
+    } else if (name === 'locationCell') {
+      this.setData({ showLocationTab: true });
     }
   },
   
@@ -75,6 +80,8 @@ Page({
       this.setData({ showExplainTab: false });
     } else if (name === 'activityPopUp') {
       this.setData({ showActivityTab: false });
+    } else if (name === 'locationPopup') {
+      this.setData({ showLocationTab: false });
     }
   },
 

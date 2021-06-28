@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Coolister-Ye/play-together#readme",
   "dependencies": {
-    "@vant/weapp": "^1.6.8"
+    "@vant/weapp": "^1.6.8",
+    "ws": "^7.5.0"
   }
 }
