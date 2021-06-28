@@ -1,2 +1,25 @@
 <!--components/tinode-chat-wx/index.wxml-->
 <text>components/tinode-chat-wx/index.wxml</text>
+<view>
+  <text>{{ serverVersion }}</text>
+</view>
+<van-popup 
+  show="{{ true }}" 
+  position="left" 
+  bind:close="onClose"
+  custom-style="height: 100%; width: 80%"
+>
+  <van-cell-group>
+    <van-field
+      model:value="{{ login }}"
+      placeholder="请输入用户名"
+      border="{{ false }}"
+    />
+    <van-field
+      model:value="{{ password }}"
+      placeholder="请输入密码"
+      border="{{ false }}"
+    />
+  </van-cell-group>
+  <van-button type="primary" bind:click="handleLoginRequest">Sign In</van-button>
+</van-popup>

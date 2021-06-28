@@ -49,6 +49,7 @@
     "van-submit-bar": "@vant/weapp/submit-bar/index",
     "van-divider": "@vant/weapp/divider/index",
     "van-action-sheet": "@vant/weapp/action-sheet/index",
-    "my-popup": "./components/my-popup/index"
+    "my-popup": "./components/my-popup/index",
+    "my-im": "./components/tinode-chat-wx"
   }
 }

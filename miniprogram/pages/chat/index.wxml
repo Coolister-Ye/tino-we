@@ -1,2 +1,4 @@
 <!--miniprogram/pages/chat/index.wxml-->
 <text>miniprogram/pages/chat/index.wxml</text>
+<my-im myServerAddress="101.34.12.89:6060" isLocalHost="{{ false }}"></my-im>
+<!-- <my-im isLocalHost="{{ false }}"></my-im> -->

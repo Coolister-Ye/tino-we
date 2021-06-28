@@ -1,5 +1,6 @@
 import {KNOWN_HOSTS, DEFAULT_HOST, MESSAGES, APP_NAME, API_KEY, LOGGING_ENABLED} from './config';
 import {secondToTime} from './strformat';
+const Tinode = require('./tinode.prod');
 
 // components/tinode-chat-wx/index.js
 Component({
@@ -70,7 +71,7 @@ Component({
     },
     // Setup transport (only websocket) and server address. This will terminate connection with the server.
     tnSetup(serverAddress, transport, locale, persistentCache, onSetupCompleted, secure=true) {
-      const tinode = new tinode({
+      const tinode = new Tinode({
         appName: APP_NAME, 
         host: serverAddress, 
         apiKey: API_KEY, 
@@ -250,6 +251,27 @@ Component({
         newState.searchableContacts = this.prepareSearchableContacts(newState.chatList, this.data.searchResults);
         this.setData(newState);
       });
+    },
+    // Handle error
+    handleError(err='', errorLevel=null, errorAction=undefined, errorActionText=null) {
+      this.setData({err, errorLevel, errorAction, errorActionText});
+    },
+    // User clicked login button in the side panel
+    handleLoginRequest() {
+      this.setData({
+        loginDisabled: true,
+        autoLogin: true
+      });
+      this.handleError('', null);
+
+      if (this.tinode.isConnected()) {
+        this.doLogin(this.data.login, this.data.password, {meth: this.credMethod, resp: this.credCode})
+      } else {
+        this.tinode.connect().catch((err) => {
+          this.setData({loginDisabled: false, autoLogin: false});
+          this.handleError(err.message, 'err');
+        });
+      }
     }
   },
 
@@ -259,6 +281,8 @@ Component({
   lifetimes: {
     attached: function () {
       // Init data
+      console.log(this.data.isLocalHost);
+      console.log(this.data.myServerAddress);
       this.data.serverAddress = this.data.isLocalHost ? KNOWN_HOSTS.local : (this.data.myServerAddress ? this.data.myServerAddress : DEFAULT_HOST);
       wx.getNetworkType({
         success: (result) => { this.data.liveConnection = !(result.networkType === 'none')},
@@ -271,33 +295,30 @@ Component({
 
       const keepLoggedIn = wx.getStorageSync('keep-logged-in');
       new Promise((resolve, reject) => {
-        this.tinode = this.tnSetup(this.serverAddress, this.transport, this.locale, keepLoggedIn, resolve);
+        this.tinode = this.tnSetup(this.data.serverAddress, this.data.transport, this.data.locale, keepLoggedIn, resolve);
         this.tinode.onConnect = this.handleConnected;
         this.tinode.onDisconnect = this.handleDisconnect;
         this.tinode.onAutoreconnectIteration = this.handleAutoreconnectIteration;
       }).then(() => {
         // TODO: Initialize desktop alerts.
         console.log("Do not implement notice push");
-      }).catch(() => {
-        // do nothing: handled earlier.
-        // catch needed to pervent unnecessary logging of error.
+
+        // Read concats
+        this.resetContactList();
+
+        const token = keepLoggedIn ? wx.getStorageSync('auth-token') : undefined;
+        if (token) {
+          this.setData({autoLogin: true});
+
+          // When reading from storage, date is returned as string.
+          token.expires = new Date(token.expires);
+          this.tinode.setAuthToken(token);
+          this.tinode.connect().catch((err) => {
+            // Socket error
+            this.setData({errorText: errorText, errorLevel: 'err'});
+          });
+        }
       });
-
-      // Read concats
-      this.resetContactList();
-
-      const token = keepLoggedIn ? wx.getStorageSync('auth-token') : undefined;
-      if (token) {
-        this.setData({autoLogin: true});
-
-        // When reading from storage, date is returned as string.
-        token.expires = new Date(token.expires);
-        this.tinode.setAuthToken(token);
-        this.tinode.connect().catch((err) => {
-          // Socket error
-          this.setData({errorText: errorText, errorLevel: 'err'});
-        });
-      }
     }
   }
 })
