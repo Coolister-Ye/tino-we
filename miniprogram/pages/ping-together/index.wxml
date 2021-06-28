@@ -36,7 +36,13 @@
   <view class="input-form round gap">
     <van-cell-group border="{{ false }}">
       <!-- activity -->
-      <van-cell title="项目" value="{{ activityValue }}" is-link data-name="activityCell" bind:click="onDisplay"></van-cell>
+      <van-cell 
+        title="项目" 
+        value="{{ activity }}" 
+        is-link 
+        data-name="activityCell" 
+        bind:click="onDisplay"
+      />
       <van-action-sheet
         show="{{ showActivityTab }}"
         actions="{{ activityActions }}"
@@ -47,7 +53,19 @@
         z-index="999"
       />
       <!-- location -->
-      <van-cell title="场地" value="多选" is-link></van-cell>
+      <van-cell 
+        title="场地" 
+        value="{{ locationValue }}" 
+        is-link 
+        data-name="locationCell" 
+        bind:click="onDisplay"
+      />
+      <my-popup 
+        show="{{ showLocationTab }}" 
+        bind:onClose="onClose" 
+        bind:onConfirm="onConfirmLocation"
+        data-name="locationPopup"
+      ></my-popup>
       <!-- date -->
       <van-cell 
         title="日期（可多选）"  

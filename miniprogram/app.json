@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/chat/index",
     "pages/ping-together/index",
     "pages/play-together/index",
     "pages/index/index",
@@ -47,6 +48,7 @@
     "van-field": "@vant/weapp/field/index",
     "van-submit-bar": "@vant/weapp/submit-bar/index",
     "van-divider": "@vant/weapp/divider/index",
-    "van-action-sheet": "@vant/weapp/action-sheet/index"
+    "van-action-sheet": "@vant/weapp/action-sheet/index",
+    "my-popup": "./components/my-popup/index"
   }
 }

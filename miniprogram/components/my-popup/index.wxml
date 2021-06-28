@@ -1,0 +1,30 @@
+<!--components/my-popup/index.wxml-->
+<van-popup
+    show = "{{ show }}" 
+    round
+    custom-style="max-height: 80%; min-height: 30%;"
+    position="{{ position }}" 
+    z-index="999"
+>
+  <view class="action-wrapper">
+    <block wx:if="{{ !useIcon }}">
+      <view class="cancel" bind:tap="onClose">取消</view>
+      <view class="certificate" bind:tap="onConfirm">确认</view>
+    </block>
+    <block wx:if="{{ useIcon }}">
+      <van-icon 
+        name="close" 
+        size="{{ size }}"
+        color = "#969799" 
+        bind:click="onClose"
+      />
+      <van-icon 
+        name="certificate"
+        size="{{ size }}"
+        color = "#07C160"  
+        bind:click="onConfirm"
+      />
+    </block>
+  </view>
+  <slot></slot>
+</van-popup>
