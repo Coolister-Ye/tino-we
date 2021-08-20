@@ -1,4 +1,5 @@
-import {WxWebSocket} from './wxws';
+// import { CONNECTING } from 'ws';
+// import {WxWebSocket} from './wxws';
 
 // miniprogram/pages/chat/index.js
 Page({
@@ -15,23 +16,33 @@ Page({
    */
   onLoad: function (options) {
     // const Tinode = require('./tinode.prod');
-    // console.log(Tinode);
-    // this.tinode = new Tinode({appName: 'test', host: 'web.tinode.com', transport: 'ws', apiKey: 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K', secure: true}, ()=> console.log('Success'));
+    // const tinode = new Tinode({appName: 'test', host: '101.34.12.89:6060', transport: 'ws', apiKey: 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K', secure: true}, ()=> console.log('Success'));
+    // tinode.onConnect = () => { console.log("here"); };
+    // tinode.connect();
+    // tinode.hello();
     // console.log(this.tinode.hello());
+    // console.log(tinode.isConnected());
+    // console.log(this.tinode);
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-
+    // const Tinode = require('./tinode.prod');
+    // const tinode = new Tinode({appName: 'test', host: '101.34.12.89:6060', transport: 'ws', apiKey: 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K', secure: true, platform: 'web'}, ()=> console.log('Success'));
+    // tinode.enableLogging(true);
+    // //  tinode.hello();
+    // //  console.log(tinode.isConnected());
+    //  tinode.onConnect = () => { console.log("here"); };
+    //  tinode.connect();   
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+  
   },
 
   /**

@@ -85,6 +85,7 @@ Component({
     },
     // Connection succeeded
     handleConnected() {
+      console.log('here');
       clearInterval(this.reconnectCountdown);
       const params = this.tinode.getServerInfo();
       this.setData({
@@ -102,12 +103,12 @@ Component({
         return;
       }
       // Sanitize and package credential. 
-      cred = Tinode.credentail(cred);
+      cred = Tinode.credential(cred);
       // Try to login with login/password. If they are not available, try token. If no token, ask for login/password.
       let promise = null;
       const token = this.tinode.getAuthToken();
       if (login && password) {
-        this.setData({password: null});
+        this.setData({ password: null });
         promise = this.tinode.loginBasic(login, password, cred);
       } else if (token) {
         promise = this.tinode.loginToken(token.token, cred);
@@ -122,7 +123,7 @@ Component({
             }
             this.handleCredentialsRequest(ctrl.params);
           } else {
-            this.this.handleLoginSuccessful();
+            this.handleLoginSuccessful();
           }
         }).catch((error) => {
           this.setData({
@@ -148,7 +149,7 @@ Component({
       }
     },
     // Connection lost
-    handleConnect(err) {
+    handleDisconnect(err) {
       this.setData({
         connected: false,
         ready: false,
@@ -281,34 +282,36 @@ Component({
   lifetimes: {
     attached: function () {
       // Init data
-      console.log(this.data.isLocalHost);
-      console.log(this.data.myServerAddress);
       this.data.serverAddress = this.data.isLocalHost ? KNOWN_HOSTS.local : (this.data.myServerAddress ? this.data.myServerAddress : DEFAULT_HOST);
-      wx.getNetworkType({
-        success: (result) => { this.data.liveConnection = !(result.networkType === 'none')},
-      }),
-      wx.getSystemInfo({
-        success: (result) => { this.data.locale = result.language},
-      })
+      wx.getNetworkType({ success: (result) => { this.data.liveConnection = !(result.networkType === 'none') } }),
+      wx.getSystemInfo({ success: (result) => { this.data.locale = result.language } })
+      
+      // Init function
+      this.handleConnected = this.handleConnected.bind(this);
+      this.handleDisconnect = this.handleDisconnect.bind(this);
+      this.handleLoginRequest = this.handleLoginRequest.bind(this);
+      this.tnSetup = this.tnSetup.bind(this);
+
       // Init event listener
       wx.onNetworkStatusChange((res) => { this.handleOnline(res.isConnected) });
-
+      
+      // Init Login
       const keepLoggedIn = wx.getStorageSync('keep-logged-in');
       new Promise((resolve, reject) => {
         this.tinode = this.tnSetup(this.data.serverAddress, this.data.transport, this.data.locale, keepLoggedIn, resolve);
-        this.tinode.onConnect = this.handleConnected;
-        this.tinode.onDisconnect = this.handleDisconnect;
-        this.tinode.onAutoreconnectIteration = this.handleAutoreconnectIteration;
+        this.tinode.onConnect = () => {console.log("here2");};
+        // this.tinode.onDisconnect = this.handleDisconnect;
+        // this.tinode.onAutoreconnectIteration = this.handleAutoreconnectIteration;
       }).then(() => {
-        // TODO: Initialize desktop alerts.
+        // TODO: Desktop alerts function need to access firebase which is not available rightnow. 
         console.log("Do not implement notice push");
 
-        // Read concats
-        this.resetContactList();
+        // Read concats from cache
+        // this.resetContactList();
 
         const token = keepLoggedIn ? wx.getStorageSync('auth-token') : undefined;
         if (token) {
-          this.setData({autoLogin: true});
+          this.setData({ autoLogin: true });
 
           // When reading from storage, date is returned as string.
           token.expires = new Date(token.expires);
