@@ -50,6 +50,7 @@
     "van-divider": "@vant/weapp/divider/index",
     "van-action-sheet": "@vant/weapp/action-sheet/index",
     "my-popup": "./components/my-popup/index",
-    "my-im": "./components/tinode-chat-wx"
+    "my-im": "./components/tinode-chat-wx",
+    "van-card": "@vant/weapp/card/index"
   }
 }

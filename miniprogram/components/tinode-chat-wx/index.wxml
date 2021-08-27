@@ -1,25 +1,70 @@
 <!--components/tinode-chat-wx/index.wxml-->
-<text>components/tinode-chat-wx/index.wxml</text>
-<view>
-  <text>{{ serverVersion }}</text>
+<!-- header -->
+<view class="info-panel">
+  <text>Tinode[Wechat][{{ serverVersion }}]</text>
 </view>
-<van-popup 
-  show="{{ true }}" 
+
+<!-- login panel -->
+<view class="login-panel">
+  <van-popup 
+  show="{{ sidePanelSelected === 'login' }}" 
   position="left" 
   bind:close="onClose"
-  custom-style="height: 100%; width: 80%"
->
+  custom-style="height: 100%; width: 100%;"
+  >
+    <view style="width: 100%; text-align: center;">
+      <van-icon name="chat-o" size="150px" />
+      <view>Tinode[Wechat][{{ serverVersion }}]</view>
+    </view>
+    <van-cell-group>
+      <van-field
+        label="UserName"
+        model:value="{{ login }}"
+        placeholder="Please enter username"
+        border="{{ false }}"
+      />
+      <van-field
+        label="Password"
+        model:value="{{ password }}"
+        placeholder="请输入密码"
+        border="{{ false }}"
+      />
+    </van-cell-group>
+    <van-button type="primary" block bind:click="handleLoginRequest">Login</van-button>
+  </van-popup>
+</view>
+
+<!-- Concact view -->
+<view class="contact-view" >
+  <van-popup 
+  show="{{ sidePanelSelected === 'contacts' }}" 
+  position="left" 
+  bind:close="onClose"
+  custom-style="height: 100%; width: 100%;"
+  >
+    <text wx:if="{{ chatList.length === 0 }}">You have no chats yet.</text>
+    <view wx:for="{{ chatList }}">
+      <view bindtap="onConcactClick" data-item="{{ item }}">
+        <view>n: {{ item.public.fn }}</view>
+        <view>p: {{ item.preview }}</view>
+      </view>
+    </view>
+  </van-popup>
+</view>
+
+<!-- Message view -->
+<view class="message-view">
+  <view>Selected Topic: {{ topicSelected }}</view>
+  <view>TopicSelectedOnline: {{ topicSelectedOnline }}</view>
+  <view class="message-container">
+    <view wx:for="{{ messageNodes }}">{{ item.content }}</view>
+  </view>
   <van-cell-group>
-    <van-field
-      model:value="{{ login }}"
+  <van-field
+      model:value="{{ messageValue }}"
       placeholder="请输入用户名"
       border="{{ false }}"
-    />
-    <van-field
-      model:value="{{ password }}"
-      placeholder="请输入密码"
-      border="{{ false }}"
+      bind:confirm="onMessageConfirm"
     />
   </van-cell-group>
-  <van-button type="primary" bind:click="handleLoginRequest">Sign In</van-button>
-</van-popup>
+</view>

@@ -19,6 +19,7 @@ Page({
     // const tinode = new Tinode({appName: 'test', host: '101.34.12.89:6060', transport: 'ws', apiKey: 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K', secure: true}, ()=> console.log('Success'));
     // tinode.onConnect = () => { console.log("here"); };
     // tinode.connect();
+    // console.log(Tinode);
     // tinode.hello();
     // console.log(this.tinode.hello());
     // console.log(tinode.isConnected());
