@@ -8,17 +8,41 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    tinode: null,
+    check: 0
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    // function tnMeContactUpdate(what, cont) {
+    //   if (what == 'msg') {
+    //     tinode.getMeTopic().contacts((c) => {
+    //       console.log(c.action);
+    //       console.log(c.latestMessage(true));
+    //     });
+    //   }
+    // };
     // const Tinode = require('./tinode.prod');
     // const tinode = new Tinode({appName: 'test', host: '101.34.12.89:6060', transport: 'ws', apiKey: 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K', secure: true}, ()=> console.log('Success'));
-    // tinode.onConnect = () => { console.log("here"); };
+    // this.setData({tinode: tinode});
+    // // Register onConnect listener
+    // tinode.onConnect = () => { 
+    //   console.log("here");
+    //   let promise = tinode.loginBasic('tinode4', 'passwd');
+    //   promise.then((res) => {
+    //     console.log("here2");
+    //     const me = tinode.getMeTopic();
+    //     me.onContactUpdate = tnMeContactUpdate;
+    //     me.subscribe(
+    //       me.startMetaQuery().withLaterSub().withDesc().withTags().withCred().build()
+    //     );
+    //   }); 
+    // };
     // tinode.connect();
+    // console.log("tinode:", tinode);
+    // console.log("tinode:", tinode.getTopic("tinode5"));
     // console.log(Tinode);
     // tinode.hello();
     // console.log(this.tinode.hello());

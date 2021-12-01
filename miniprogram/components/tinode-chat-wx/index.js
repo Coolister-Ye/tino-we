@@ -30,7 +30,7 @@ Component({
     myServerAddress: {
       type: String,
       value: null
-    }
+    },
   },
 
   /**
@@ -97,6 +97,15 @@ Component({
     },
     // Setup transport (only websocket) and server address. This will terminate connection with the server.
     tnSetup(serverAddress, transport, locale, persistentCache, onSetupCompleted, secure = true) {
+      console.log("New tinode:", {
+        appName: APP_NAME,
+        host: serverAddress,
+        apiKey: API_KEY,
+        transport: transport,
+        persist: persistentCache,
+        secure: secure,
+        onComplete: onSetupCompleted
+      })
       const tinode = new Tinode({
         appName: APP_NAME,
         host: serverAddress,
@@ -104,7 +113,7 @@ Component({
         transport: transport,
         persist: persistentCache,
         secure: secure,
-        onSetupCompleted: onSetupCompleted
+        onComplete: onSetupCompleted
       });
       tinode.setHumanLanguage(locale);
       tinode.enableLogging(LOGGING_ENABLED, true);
@@ -135,6 +144,7 @@ Component({
         console.log('Already logged in.');
         return;
       }
+
       // Sanitize and package credential. 
       cred = Tinode.credential(cred);
       // Try to login with login/password. If they are not available, try token. If no token, ask for login/password.
@@ -144,13 +154,15 @@ Component({
         this.setData({
           password: null
         });
-        promise = this.tinode.loginBasic(login, password, cred);
+        console.log("Login:", login, password)
+        promise = this.tinode.loginBasic('tinode4', 'passwd');
       } else if (token) {
         promise = this.tinode.loginToken(token.token, cred);
       }
 
       if (promise) {
         promise.then((ctrl) => {
+          console.log("doLogin", ctrl)
           if (ctrl.code >= 300 && ctrl.text === 'validate credentials') {
             this.setData({
               loadSpinnerVisible: false
@@ -166,6 +178,7 @@ Component({
             this.handleLoginSuccessful();
           }
         }).catch((error) => {
+          console.log("doLogin-error", error)
           this.setData({
             loginDisabled: false,
             credMethod: undefined,
@@ -283,30 +296,13 @@ Component({
       }
 
       this.tinode.getMeTopic().contacts((c) => {
+        console.log("cc:", c)
         if (!c.topic && !c.user) {
           // Contacts expect c.topic to be set.
           c.topic = c.name;
         }
-        const _c = {};
-        Object.keys(c).forEach((x) => {
-          if (!x.startsWith('_')) {
-            _c[x] = c[x];
-          }
-        });
-        
-        if (c.latestMessage) {
-          console.log(c);
-          const msg = c.latestMessage();
-          console.log(msg);
-          if (msg) {
-            deliveryStatus = msg._status || c.msgStatus(msg, true);
-            _c.preview = typeof msg.content == 'string' ?
-              msg.content.substr(0, MESSAGE_PREVIEW_LENGTH) :
-              Drafty.preview(msg.content, MESSAGE_PREVIEW_LENGTH);
-          }
-        }
 
-        newState.chatList.push(_c);
+        newState.chatList.push(c);
         if (this.data.topicSelected == c.topic) {
           newState.topicSelectedOnline = c.online;
           newState.topicSelectedAcs = c.acs;
@@ -314,7 +310,7 @@ Component({
         // Merge search result and chat list. 
         // newState.searchableContacts = this.prepareSearchableContacts(newState.chatList, this.data.searchResults);
       });
-      console.log(newState);
+      console.log("new State:", newState);
       this.setData(newState);
     },
     // Handle error
@@ -353,16 +349,14 @@ Component({
     // Handle login in successfully
     handleLoginSuccessful() {
       this.handleError();
-
       // Refresh authentication token.
       if (wx.getStorageSync('keep-logged-in')) {
         wx.setStorageSync('auth-token', this.tinode.getAuthToken());
       }
 
-      const goToTopic = this.data.requestedTopic;
       // Logged in fine, subscribe to 'me' attaching callbacks from the contacts view.
       const me = this.tinode.getMeTopic();
-      me.onMetaDesc = this.tnMeMetDesc;
+      me.onMetaDesc = this.tnMeMetaDesc;
       me.onContactUpdate = this.tnMeContactUpdate;
       me.onSubsUpdated = this.tnMeSubsUpdated;
       this.setData({
@@ -375,14 +369,18 @@ Component({
       });
       // Subscribe, fetch topic desc, the list of subscriptions. Messages are not fetched.
       me.subscribe(
-        me.startMetaQuery().withLaterSub().withDesc().withTags().withCred().build()
+        me.startMetaQuery().
+        withLaterSub().
+        withDesc().
+        withTags().
+        withCred().
+        build()
       ).catch((err) => {
         this.tinode.disconnect();
         wx.removeStorageSync('auto-token');
         this.handleError(err.message, 'err');
       }).finally(() => {
         this.setData({
-          loadSpinnerVisible: false,
           sidePanelSelected: 'contacts'
         });
       });
@@ -398,7 +396,7 @@ Component({
           });
         }
         if (desc.acs) {
-          this.Data({
+          this.setData({
             incognitoMode: !desc.acs.isPresencer()
           });
         }
@@ -408,10 +406,10 @@ Component({
     // Reactions to updates to the contact list.
     // Condition: on/off: 'P' permission 
     tnMeContactUpdate(what, cont) {
-      console.log(what);
+      console.log("tnMeContactUpdate");
       if (what == 'on' || what == 'off') {
         this.resetContactList();
-        if (this.state.topicSelected == cont.topic) {
+        if (this.data.topicSelected == cont.topic) {
           this.setData({
             topicSelectedOnline: (what == 'on')
           });
@@ -461,20 +459,15 @@ Component({
         console.log("Unsupported (yet) presence update:" + what + " in: " + cont.topic);
       }
     },
-
+    
+    // Update contact list
     tnMeSubsUpdated() {
-      this.resetContactList();
-    },
-
-    // contact click wrapper
-    onConcactClick(event) {
-      const item = event.currentTarget.dataset.item;
-      console.log(item);
-      this.handleTopicSelected(item.topic);
+      // this.resetContactList();
     },
 
     // User clicked on a contact in the side panel or deleted a contact.
-    handleTopicSelected(topicName) {
+    handleTopicSelected(event) {
+      const item = event.currentTarget.dataset.item;
       // Clear newTopicParams after use.
       if (this.data.newTopicParams && this.data.newTopicParams._topicName != topicName) {
         this.setData({
@@ -593,6 +586,7 @@ Component({
         messageNodes
       });
     },
+
   },
 
   /**

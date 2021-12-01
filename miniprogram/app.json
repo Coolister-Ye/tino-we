@@ -51,6 +51,7 @@
     "van-action-sheet": "@vant/weapp/action-sheet/index",
     "my-popup": "./components/my-popup/index",
     "my-im": "./components/tinode-chat-wx",
+    "my-mv": "./components/tinode-message-view",
     "van-card": "@vant/weapp/card/index"
   }
 }
