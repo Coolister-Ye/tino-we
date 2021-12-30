@@ -1,17 +1,28 @@
 /* components/tinode-chat-wx/index.wxss */
-page {
-    height: 100%;
-}
-my-im {
-    height: 100%;
+.node-container {
+    display: flex;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+    max-width: 80%;
 }
 
-.message-view {
-    display: flex;
-    min-height: 100%;
-    flex-direction: column;
+.avatar-container {
+    margin-right: 10px;
+}
+
+.chat-container {
+    padding: 10px;
+    background-color: white;
+    border-radius: 10%;
+}
+
+.message-container {
+    min-height: calc(100vh - 70px);
 }
 
 .input-box {
-    flex: 1;
+    height: 50px;
+    margin-left: 20px;
+    margin-right: 20px;
 }

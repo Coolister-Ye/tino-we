@@ -1,15 +1,10 @@
 <!--components/tinode-chat-wx/index.wxml-->
 <!-- login panel -->
 <view class="login-panel" wx:if="{{ sidePanelSelected === 'login' }}">
-  <van-popup 
-  show="{{ sidePanelSelected === 'login' }}" 
-  position="left" 
-  bind:close="onClose"
-  custom-style="height: 100%; width: 100%;"
-  >
+  <van-popup show="{{ sidePanelSelected === 'login' }}" position="left" bind:close="onClose" custom-style="height: 100%; width: 100%;">
     <view style="width: 100%; text-align: center;">
       <van-icon name="chat-o" size="150px" />
-      <view>Tinode[Wechat][{{ serverVersion }}]</view>
+      <view>Tinode-Wechat: [{{ serverVersion }}]</view>
     </view>
     <van-cell-group>
       <van-field
@@ -34,7 +29,7 @@
   <van-popup show="{{ sidePanelSelected === 'contacts' }}" position="left" bind:close="onClose"custom-style="height: 100%; width: 100%;">
     <van-search value="{{ value }}" placeholder="Find your friends" />
     <text wx:if="{{ chatList.contactList.length === 0 }}">You have no chats yet.</text>
-    <view wx:for="{{ chatList.contactList }}">
+    <view wx:for="{{ chatList.contactList }}" wx:key="name">
       <view bindtap="handleTopicSelected" data-item="{{ item }}">
         <van-cell center size="large" title="{{ item.public.fn }}" value="{{ item.online ? \"Online\": \"Offline\" }}">
           <van-icon slot="icon" name="{{ item.avatar }}" info="{{ item.unread }}" class="custom-icon" size="50px"/>
@@ -46,13 +41,16 @@
 
 <!-- Message view -->
 <view class="message-view" wx:if="{{ topicSelected }}">
-  <!-- <van-nav-bar title="{{ topicSelected }}" left-text="back" left-arrow bind:click-left="onClickLeft" bind:click-right="onClickRight" fixed="true"/> -->
+  <!-- <van-nav-bar title="chat" left-text="back" left-arrow fixed="true" placeholder="true" /> -->
   <view class="message-container">
-    <view wx:for="{{ messageNodes }}">
-      <van-image round width="10" height="10rem" src="https://img.yzcdn.cn/vant/cat.jpeg"/>
-      <view> {{ item.userAvatar }} </view>
-      {{ item.content }}
+    <view class="node-container" wx:for="{{ messageNodes }}">
+        <van-image class="avatar-container" round src="https://img.yzcdn.cn/vant/cat.jpeg" height="30px" width="30px"/>
+        <!-- <van-icon wx:if="{{ userAvatar !== undefined }}" class="circle-icon" name="" /> -->
+      <!-- <van-image round width="10" height="50px" src="https://img.yzcdn.cn/vant/cat.jpeg"/> -->
+      <view class="chat-container"> {{ item.content }} </view>
     </view>
   </view>
-  <van-field model:value="{{ messageValue }}" border="{{ false }}" bind:confirm="onMessageConfirm" fixed="true" class="input-box"/>
+  <view class="input-box">
+    <van-field model:value="{{ messageValue }}" border="{{ false }}" bind:confirm="onMessageConfirm" fixed="true"/>
+  </view>
 </view>

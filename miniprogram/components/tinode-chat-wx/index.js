@@ -645,6 +645,7 @@ Component({
 
       // Get cached messages
       topic.messages((msg, prev, next, i) => {
+        console.log("msg", msg);
         let nextFrom = next ? (next.from || null) : 'chan';
         let sequence = 'single';
         let thisFrom = msg.from || 'chan';
