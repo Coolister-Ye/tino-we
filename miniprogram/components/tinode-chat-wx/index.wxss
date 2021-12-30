@@ -1,1 +1,17 @@
 /* components/tinode-chat-wx/index.wxss */
+page {
+    height: 100%;
+}
+my-im {
+    height: 100%;
+}
+
+.message-view {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+}
+
+.input-box {
+    flex: 1;
+}

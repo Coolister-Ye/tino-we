@@ -1,5 +1,4 @@
 <!--miniprogram/pages/chat/index.wxml-->
-<text>miniprogram/pages/chat/index.wxml</text>
 <!-- <my-mv tinode="{{ tinode }}" check="{{ check }}" topic="tinode5"></my-mv> -->
-<my-im myServerAddress="101.34.12.89:6060" isLocalHost="{{ false }}"></my-im>
+<my-im myServerAddress="101.34.12.89" isLocalHost="{{ false }}"></my-im>
 <!-- <my-im isLocalHost="{{ false }}"></my-im> -->

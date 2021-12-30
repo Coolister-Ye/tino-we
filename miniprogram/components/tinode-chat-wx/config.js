@@ -53,3 +53,5 @@ export const MESSAGES = {
     description: 'Show extended topic information'
   }
 };
+
+export const PIC_DIR = "../../../../components/tinode-chat-wx/pic/";

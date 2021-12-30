@@ -4,7 +4,8 @@ import {
   MESSAGES,
   APP_NAME,
   API_KEY,
-  LOGGING_ENABLED
+  LOGGING_ENABLED,
+  PIC_DIR
 } from './config';
 import {
   secondToTime
@@ -65,7 +66,7 @@ Component({
     credCode: undefined,
     // Topic Info
     myUserId: null,
-    topicSelectedAcs: '',
+    topicSelected: '',
     topicSelectedAcs: null,
     topicSelectedOnline: false,
     newTopicParams: null,
@@ -73,6 +74,7 @@ Component({
     chatList: [],
     // Value in input field
     messageValue: '',
+    archive: true
   },
 
   /**
@@ -138,40 +140,38 @@ Component({
         });
       }
     },
-    // Handle Login
+    /* Handle Login
+     ** params login: username
+     ** params password: password
+     ** params cred: second level Credential (optional)
+     */
     doLogin(login, password, cred) {
       if (this.tinode.isAuthenticated()) {
         console.log('Already logged in.');
         return;
       }
-
       // Sanitize and package credential. 
       cred = Tinode.credential(cred);
-      // Try to login with login/password. If they are not available, try token. If no token, ask for login/password.
+      // Try to login with login/password. If they are not available, try token.
       let promise = null;
       const token = this.tinode.getAuthToken();
       if (login && password) {
         this.setData({
           password: null
         });
-        console.log("Login:", login, password)
-        promise = this.tinode.loginBasic('tinode4', 'passwd');
+        promise = this.tinode.loginBasic(login, password, cred);
       } else if (token) {
         promise = this.tinode.loginToken(token.token, cred);
       }
 
       if (promise) {
         promise.then((ctrl) => {
-          console.log("doLogin", ctrl)
           if (ctrl.code >= 300 && ctrl.text === 'validate credentials') {
             this.setData({
               loadSpinnerVisible: false
             });
             if (cred) {
-              this.setData({
-                errorText: MESSAGES.code_doesnot_match.defaultMessage,
-                errorLevel: 'warn'
-              });
+              this.handleError(MESSAGES.code_doesnot_match.defaultMessage, 'warn');
             }
             this.handleCredentialsRequest(ctrl.params);
           } else {
@@ -183,11 +183,9 @@ Component({
             loginDisabled: false,
             credMethod: undefined,
             credCode: undefined,
-            loadSpinnerVisible: false,
-            autoLogin: false,
-            errorText: error,
-            errorLevel: 'err'
+            autoLogin: false
           });
+          this.handleError(error, 'err')
           wx.removeStorage({
             key: 'auth-token',
             success(res) {
@@ -197,7 +195,6 @@ Component({
         });
       } else {
         // No login credentials provided.
-        // Make sure we are on the login page.
         this.setData({
           loginDisabled: false
         });
@@ -284,8 +281,57 @@ Component({
 
       return Object.values(merged);
     },
+    /* Makr avatar url
+     */
+    makeImageUrl(extractChat) {
+      if (extractChat.public && extractChat.public.photo) {
+        return extractChat.public.photo;
+      } else {
+        return PIC_DIR + "cat" + extractChat.public.fn.charAt(1).charCodeAt().toString().charAt(1) + ".png";
+      }
+    },
+    /* Extract useful prop from chat list object.
+     */
+    extractFromChat(chat) {
+      const useProp = ["acs", "name", "online", "private", "public", "topic", "unread"];
+      const extractChat = {};
+      for (var i=0; i<useProp.length; i++) {
+        extractChat[useProp[i]] = chat[useProp[i]];
+      }
+      extractChat.avatar = this.makeImageUrl(extractChat);
+      return extractChat;
+    },
+    /* Derive State from chatlist object
+     */
+    deriveStateFromChatlist(chatlist) {
+      const contacts = [];
+      let unreadThreads = 0;
+      let archivedCount = 0;
+      chatlist.map((c) => {
+        const blocked = c.acs && !c.acs.isJoiner();
+        // Show only blocked contacts only when props.blocked == true.
+        if (blocked) {
+          return;
+        } else {
+          contacts.push(this.extractFromChat(c));
+        }
+        if (c.private && c.private.arch) {
+          if (this.data.archive) {
+            contacts.push(this.extractFromChat(c));
+          } else {
+            archivedCount++;
+          }
+        }
+      });
+      console.log("Contacts", contacts);
+      return {
+        contactList: contacts,
+        unreadThreads: unreadThreads
+      };
+    },
 
-    // Set or read contact from local
+    /* Helper function to set or read contact from local
+     */
     resetContactList() {
       const newState = {
         chatList: []
@@ -296,12 +342,10 @@ Component({
       }
 
       this.tinode.getMeTopic().contacts((c) => {
-        console.log("cc:", c)
         if (!c.topic && !c.user) {
-          // Contacts expect c.topic to be set.
+          // Contacts expect c.topic to be set
           c.topic = c.name;
         }
-
         newState.chatList.push(c);
         if (this.data.topicSelected == c.topic) {
           newState.topicSelectedOnline = c.online;
@@ -310,8 +354,10 @@ Component({
         // Merge search result and chat list. 
         // newState.searchableContacts = this.prepareSearchableContacts(newState.chatList, this.data.searchResults);
       });
-      console.log("new State:", newState);
-      this.setData(newState);
+      this.setData({
+        chatList: this.deriveStateFromChatlist(newState.chatList),
+        ready: true
+      });
     },
     // Handle error
     handleError(err = '', errorLevel = null, errorAction = undefined, errorActionText = null) {
@@ -346,7 +392,8 @@ Component({
       }
     },
 
-    // Handle login in successfully
+    /* Handle login in successfully
+     */
     handleLoginSuccessful() {
       this.handleError();
       // Refresh authentication token.
@@ -369,12 +416,7 @@ Component({
       });
       // Subscribe, fetch topic desc, the list of subscriptions. Messages are not fetched.
       me.subscribe(
-        me.startMetaQuery().
-        withLaterSub().
-        withDesc().
-        withTags().
-        withCred().
-        build()
+        me.startMetaQuery().withLaterSub().withDesc().withTags().withCred().build()
       ).catch((err) => {
         this.tinode.disconnect();
         wx.removeStorageSync('auto-token');
@@ -386,7 +428,8 @@ Component({
       });
     },
 
-    // Setup me topic
+    /* Setup me topic
+     */
     tnMeMetaDesc(desc) {
       if (desc) {
         if (desc.public) {
@@ -406,13 +449,10 @@ Component({
     // Reactions to updates to the contact list.
     // Condition: on/off: 'P' permission 
     tnMeContactUpdate(what, cont) {
-      console.log("tnMeContactUpdate");
       if (what == 'on' || what == 'off') {
         this.resetContactList();
         if (this.data.topicSelected == cont.topic) {
-          this.setData({
-            topicSelectedOnline: (what == 'on')
-          });
+          this.setData({ topicSelectedOnline: (what == 'on') });
         }
       } else if (what == 'read') {
         this.resetContactList();
@@ -459,17 +499,19 @@ Component({
         console.log("Unsupported (yet) presence update:" + what + " in: " + cont.topic);
       }
     },
-    
-    // Update contact list
+
+    /* Setup contact list
+     */
     tnMeSubsUpdated() {
-      // this.resetContactList();
+      this.resetContactList();
     },
 
     // User clicked on a contact in the side panel or deleted a contact.
     handleTopicSelected(event) {
       const item = event.currentTarget.dataset.item;
+      const topicName = item.topic;
       // Clear newTopicParams after use.
-      if (this.data.newTopicParams && this.data.newTopicParams._topicName != topicName) {
+      if (this.data.newTopicParams && this.data.newTopicParams.topicName != topicName) {
         this.setData({
           newTopicParams: null
         });
@@ -479,11 +521,13 @@ Component({
         this.setData({
           errorText: '',
           errorLevel: null,
+          sidePanelSelected: 'message-view'
         });
         // Different contact selected.
         if (this.data.topicSelected != topicName) {
           this.setData({
             topicSelected: topicName,
+            prevTopicSelected: this.data.topicSelected,
             topicSelectedOnline: this.tinode.isTopicOnline(topicName),
             topicSelectedAcs: this.tinode.getTopicAccessMode(topicName)
           });
@@ -497,7 +541,7 @@ Component({
           topicSelectedAcs: null
         });
       }
-      this.readerMessageView();
+      this.renderMessageView(null);
     },
 
     // User is sending a message, either plain text or a drafty object, possibly
@@ -537,20 +581,74 @@ Component({
           });
       }
     },
+    /* Leave the old topic
+    */
+    level(oldTopicName) {
+      if (!oldTopicName || !this.tinode.isTopicCached(oldTopicName)) {
+        return;
+      }
+      const oldTopic = this.tinode.getTopic(oldTopicName);
+      if (oldTopic && oldTopic.isSubscribed()) {
+        oldTopic.leave(false)
+          .catch(() => {/* do nothing here */})
+          .finally(() => {
+            oldTopic.onData = undefined;
+            oldTopic.onAllMessagesReceived = undefined;
+            oldTopic.onInfo = undefined;
+            oldTopic.onMetaDesc = undefined;
+            oldTopic.onSubsUpdated = undefined;
+            oldTopic.onPres = undefined;
+          });
+      }
+    },
+    /* Render messgae page
+    */
+    renderMessageView(msg) {
+      const topic = this.data.topicSelected ? this.tinode.getTopic(this.data.topicSelected) : undefined;
 
-    readerMessageView() {
-      const topic = this.tinode.getTopic(this.data.topicSelected);
+      if (this.data.topicSelected != this.data.prevTopicSelected) {
+        if (this.data.prevTopicSelected && !Tinode.isNewGroupTopicName(this.data.prevTopicSelected)) {
+          this.leave(this.data.prevTopicSelected);
+        }
+
+        if (topic) {
+          topic.onData = this.renderMessageView;
+        }
+      }
+
+      if (topic && !topic.isSubscribed() && this.data.ready) {
+        const newTopic = this.data.topicSelected != this.data.prevTopicSelected;
+        let getQuery = topic.startMetaQuery().withLaterDesc().withLaterSub();
+        if (newTopic) {
+          getQuery = getQuery.withLaterData(24);
+        }
+        topic.subscribe(getQuery.build())
+        .then((ctrl) => {
+          console.log("HERE MAN!", ctrl);
+          if (ctrl.code == 303) {
+            this.setData({
+              topicSelected: ctrl.params.topic,
+              prevTopicSelected: this.data.topicSelected
+            });
+            return;
+          }
+        }).catch((err) => {
+          console.log("Failed subscription to", this.data.topicSelected);
+        });
+      }
+    
       const isChannel = topic.isChannelType();
       const groupTopic = topic.isGroupType() && !isChannel;
       let messageNodes = [];
       let previousFrom = null;
       let chatBoxClass = null;
-      topic.messages((msg, prev, next, i) => {
-        console.log(msg);
-        let nextFrom = next ? (next.from || null) : 'chan';
 
+      // Get cached messages
+      topic.messages((msg, prev, next, i) => {
+        let nextFrom = next ? (next.from || null) : 'chan';
         let sequence = 'single';
         let thisFrom = msg.from || 'chan';
+        chatBoxClass
         if (thisFrom == previousFrom) {
           if (thisFrom == nextFrom) {
             sequence = 'middle';
@@ -579,14 +677,24 @@ Component({
         }
         messageNodes.push({
           userName: userName,
-          content: msg.content
+          content: msg.content,
+          deteted: msg.hi,
+          miniType: msg.head ? msg.head.mime: null,
+          timestamp: msg.ts,
+          reponse: isReply,
+          seq: msg.seq,
+          userFrom: userFrom,
+          userName: userName,
+          userAvatar: userAvatar,
+          sequence: sequence,
+          received: deliveryStatus,
+          uploader: msg._uploader,
+          key: msg.seq
         });
       });
-      this.setData({
-        messageNodes
-      });
+      console.log("messageNodes", messageNodes);
+      this.setData({ messageNodes });
     },
-
   },
 
   /**
@@ -617,13 +725,14 @@ Component({
       this.tnMeMetaDesc = this.tnMeMetaDesc.bind(this);
       this.tnMeContactUpdate = this.tnMeContactUpdate.bind(this);
       this.tnMeSubsUpdated = this.tnMeSubsUpdated.bind(this);
+      this.renderMessageView = this.renderMessageView.bind(this);
 
       // Init event listener
       wx.onNetworkStatusChange((res) => {
         this.handleOnline(res.isConnected)
       });
 
-      // Init Login
+      // Init Login.
       const keepLoggedIn = wx.getStorageSync('keep-logged-in');
       new Promise((resolve, reject) => {
         this.tinode = this.tnSetup(this.data.serverAddress, this.data.transport, this.data.locale, keepLoggedIn, resolve);
