@@ -1,19 +1,10 @@
-import {
-  KNOWN_HOSTS,
-  DEFAULT_HOST,
-  MESSAGES,
-  APP_NAME,
-  API_KEY,
-  LOGGING_ENABLED,
-  PIC_DIR
-} from './config';
-import {
-  secondToTime
-} from './lib/strformat';
-import {
-  base64ReEncode,
-  makeImageDataUrl
-} from './lib/blob-helpers.js';
+import { KNOWN_HOSTS, DEFAULT_HOST, MESSAGES, APP_NAME, API_KEY, LOGGING_ENABLED, PIC_DIR, ICON_FN, MAX_TITLE_LENGTH, NAVI_ROUTE } from './config';
+import { secondToTime } from './lib/strformat';
+import { base64ReEncode, makeImageDataUrl, makeAvatorUrl, makeAvatorDataUrl } from './lib/blob-helpers';
+import { theCard } from './lib/toolbox';
+
+import Notify from '../../miniprogram_npm/@vant/weapp/notify/notify';
+import Toast from '../../miniprogram_npm//@vant/weapp/toast/toast';
 
 const Tinode = require('./tinode.prod');
 const Drafty = Tinode.Drafty;
@@ -64,6 +55,10 @@ Component({
     password: null,
     credMethod: undefined,
     credCode: undefined,
+    // Sign up info
+    email: "",
+    fn: '', // full/formatted name
+    imageDataUrl: null,
     // Topic Info
     myUserId: null,
     topicSelected: '',
@@ -72,132 +67,83 @@ Component({
     newTopicParams: null,
     // Chats as shown in the ContactsView
     chatList: [],
+    // Contacts returned by a search query.
+    searchResults: [],
     // Value in input field
     messageValue: '',
-    archive: true
+    // Icon file
+    iconFile: ICON_FN,
+    // show blocked contacts
+    blocked: false,
+    // show archive contacts
+    archive: false
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
+    // Handle error notification
+    handleError(errorText='', errorLevel='primary') {
+      if (errorText !== '') {
+        // Notify({type: errorLevel, message: errorText, selector: '#van-notify', context: this, duration: 2000});
+        Toast({message: errorText, context: this});
+      }
+    },
     // Handle network status changed
     handleOnline(online) {
-      console.log('handleOnline', online);
       if (online) {
         clearInterval(this.reconnectCountdown);
         this.tinode.reconnect();
       } else {
-        this.setData({
-          errorText: MESSAGES.no_connection.defaultMessage,
-          errorLevel: 'warn'
-        });
+        this.handleError(MESSAGES.no_connection.defaultMessage, 'warning');
       }
-      this.setData({
-        liveConnection: true
-      });
+      this.setData({liveConnection: true});
     },
     // Setup transport (only websocket) and server address. This will terminate connection with the server.
     tnSetup(serverAddress, transport, locale, persistentCache, onSetupCompleted, secure = true) {
-      console.log("New tinode:", {
-        appName: APP_NAME,
-        host: serverAddress,
-        apiKey: API_KEY,
-        transport: transport,
-        persist: persistentCache,
-        secure: secure,
-        onComplete: onSetupCompleted
-      })
-      const tinode = new Tinode({
-        appName: APP_NAME,
-        host: serverAddress,
-        apiKey: API_KEY,
-        transport: transport,
-        persist: persistentCache,
-        secure: secure,
-        onComplete: onSetupCompleted
-      });
+      const tinode = new Tinode({appName: APP_NAME, host: serverAddress, apiKey: API_KEY, transport: transport, persist: persistentCache, secure: secure, onComplete: onSetupCompleted});
       tinode.setHumanLanguage(locale);
       tinode.enableLogging(LOGGING_ENABLED, true);
-      onSetupCompleted(true);
       return tinode;
+    },
+    // Called for each auto-reconnect iteration
+    handleAutoreconnectIteration(sec, porm) {
+      clearInterval(this.reconnectCountdown);
+
+      if (sec < 0) {
+        return;
+      }
+
+      if (porm) {
+        // Reconnecting now
+        porm.then(() => {
+          // console.log('clear error');
+        }).catch((err) => {
+          this.setData({errorText: err.message, errorLevel: 'danger'});
+        });
+        return;
+      }
+
+      let count = sec / 1000;
+      count = count | count;
+      this.reconnectCountdown = setInterval(() => {
+        const timeLeft = (count > 99) ? secondToTime(count) : count;
+        this.handleError(MESSAGES.reconnectCountdown.defaultMessage + timeLeft, 'warning')
+        clearInterval(this.reconnectCountdown);
+        this.tinode.reconnect();
+        count -= 1;
+      }, 1000);
     },
     // Connection succeeded
     handleConnected() {
       // Just to be sure.
       clearInterval(this.reconnectCountdown);
-      this.handleError();
-
       const params = this.tinode.getServerInfo();
-      this.setData({
-        serverVersion: params.ver + ' ' + (params.build ? params.build : 'none')
-      });
+      this.setData({serverVersion: params.ver + ' ' + (params.build ? params.build : 'none')});
 
       if (this.data.autoLogin) {
-        this.doLogin(this.data.login, this.data.password, {
-          meth: this.data.credMethod,
-          resp: this.data.credCode
-        });
-      }
-    },
-    /* Handle Login
-     ** params login: username
-     ** params password: password
-     ** params cred: second level Credential (optional)
-     */
-    doLogin(login, password, cred) {
-      if (this.tinode.isAuthenticated()) {
-        console.log('Already logged in.');
-        return;
-      }
-      // Sanitize and package credential. 
-      cred = Tinode.credential(cred);
-      // Try to login with login/password. If they are not available, try token.
-      let promise = null;
-      const token = this.tinode.getAuthToken();
-      if (login && password) {
-        this.setData({
-          password: null
-        });
-        promise = this.tinode.loginBasic(login, password, cred);
-      } else if (token) {
-        promise = this.tinode.loginToken(token.token, cred);
-      }
-
-      if (promise) {
-        promise.then((ctrl) => {
-          if (ctrl.code >= 300 && ctrl.text === 'validate credentials') {
-            this.setData({
-              loadSpinnerVisible: false
-            });
-            if (cred) {
-              this.handleError(MESSAGES.code_doesnot_match.defaultMessage, 'warn');
-            }
-            this.handleCredentialsRequest(ctrl.params);
-          } else {
-            this.handleLoginSuccessful();
-          }
-        }).catch((error) => {
-          console.log("doLogin-error", error)
-          this.setData({
-            loginDisabled: false,
-            credMethod: undefined,
-            credCode: undefined,
-            autoLogin: false
-          });
-          this.handleError(error, 'err')
-          wx.removeStorage({
-            key: 'auth-token',
-            success(res) {
-              console.log(res);
-            }
-          });
-        });
-      } else {
-        // No login credentials provided.
-        this.setData({
-          loginDisabled: false
-        });
+        this.doLogin(this.data.login, this.data.password, {meth: this.data.credMethod, resp: this.data.credCode});
       }
     },
     // Connection lost
@@ -206,196 +152,63 @@ Component({
         connected: false,
         ready: false,
         topicSelectedOnline: false,
-        errorText: err && err.message ? err.message : 'Disconnected',
-        errorLevel: err && err.message ? 'err' : 'warn',
         loginDisabled: false,
         serverVersion: 'no connection'
       });
+      this.handleError(err && err.message ? err.message : 'Disconnected', err && err.message ? 'danger' : 'warning');
     },
-    // Called for each auto-reconnect iteration
-    handleAutoreconnectIteration(sec, porm) {
-      clearInterval(this.reconnectCountdown);
-
-      if (sec < 0) {
-        console.log('clear error');
+    /* Handle Login
+     ** params login: username
+     ** params password: password
+     ** params cred: second level Credential (optional)
+     */
+    doLogin(login, password, cred) {
+      if (this.tinode.isAuthenticated()) {
         return;
       }
+      // Sanitize and package credential. 
+      cred = Tinode.credential(cred);
+      // Try to login with login/password. If they are not available, try token.
+      let promise = null;
+      const token = this.tinode.getAuthToken();
+      if (login && password) {
+        this.setData({password: null});
+        promise = this.tinode.loginBasic(login, password, cred);
+      } else if (token) {
+        promise = this.tinode.loginToken(token.token, cred);
+      }
 
-      if (porm) {
-        // Reconnecting now
-        porm.then(() => {
-          // Reconnected: clear error
-          console.log('clear error');
+      if (promise) {
+        promise.then((ctrl) => {
+          if (ctrl.code >= 300 && ctrl.text === 'validate credentials') {
+            if (cred) {
+              this.handleError(MESSAGES.code_doesnot_match.defaultMessage, 'warning');
+            }
+            this.handleCredentialsRequest(ctrl.params);
+          } else {
+            this.handleLoginSuccessful();
+          }
         }).catch((err) => {
           this.setData({
-            errorText: err.message,
-            errorLevel: 'err'
-          });
-        });
-        return;
-      }
-
-      const {
-        formatMessage
-      } = null;
-      let count = sec / 1000;
-      count = count | count;
-      this.reconnectCountdown = setInterval(() => {
-        const timeLeft = (count > 99) ? secondToTime(count) : count;
-        this.setData({
-          errorText: "reconnecting",
-          errorLevel: 'warn',
-          errorAction: () => {
-            clearInterval(this.reconnectCountdown);
-            this.tinode.reconnect();
-          }
-        });
-        count -= 1;
-      }, 1000);
-    },
-    // Merge search results and contact list to create a single flat
-    // list of known contacts for GroupManager to use.
-    prepareSearchableContacts(chatList, foundContacts) {
-      const merged = {};
-
-      // For chatList topics merge only p2p topics and convert them to the
-      // same format as foundContacts.
-      for (const c of chatList) {
-        if (Tinode.isP2PTopicName(c.topic)) {
-          merged[c.topic] = {
-            user: c.topic,
-            updated: c.updated,
-            public: c.public,
-            private: c.private,
-            acs: c.acs
-          };
-        }
-      }
-
-      // Add all foundCountacts if they have not been added already.
-      for (const c of foundConracts) {
-        if (!merged[c.user]) {
-          merged[c.user] = c;
-        }
-      }
-
-      return Object.values(merged);
-    },
-    /* Makr avatar url
-     */
-    makeImageUrl(extractChat) {
-      if (extractChat.public && extractChat.public.photo) {
-        return extractChat.public.photo;
-      } else {
-        return PIC_DIR + "cat" + extractChat.public.fn.charAt(1).charCodeAt().toString().charAt(1) + ".png";
-      }
-    },
-    /* Extract useful prop from chat list object.
-     */
-    extractFromChat(chat) {
-      const useProp = ["acs", "name", "online", "private", "public", "topic", "unread"];
-      const extractChat = {};
-      for (var i=0; i<useProp.length; i++) {
-        extractChat[useProp[i]] = chat[useProp[i]];
-      }
-      extractChat.avatar = this.makeImageUrl(extractChat);
-      return extractChat;
-    },
-    /* Derive State from chatlist object
-     */
-    deriveStateFromChatlist(chatlist) {
-      const contacts = [];
-      let unreadThreads = 0;
-      let archivedCount = 0;
-      chatlist.map((c) => {
-        const blocked = c.acs && !c.acs.isJoiner();
-        // Show only blocked contacts only when props.blocked == true.
-        if (blocked) {
-          return;
-        } else {
-          contacts.push(this.extractFromChat(c));
-        }
-        if (c.private && c.private.arch) {
-          if (this.data.archive) {
-            contacts.push(this.extractFromChat(c));
-          } else {
-            archivedCount++;
-          }
-        }
-      });
-      console.log("Contacts", contacts);
-      return {
-        contactList: contacts,
-        unreadThreads: unreadThreads
-      };
-    },
-
-    /* Helper function to set or read contact from local
-     */
-    resetContactList() {
-      const newState = {
-        chatList: []
-      };
-
-      if (!this.data.ready) {
-        newState.ready = true;
-      }
-
-      this.tinode.getMeTopic().contacts((c) => {
-        if (!c.topic && !c.user) {
-          // Contacts expect c.topic to be set
-          c.topic = c.name;
-        }
-        newState.chatList.push(c);
-        if (this.data.topicSelected == c.topic) {
-          newState.topicSelectedOnline = c.online;
-          newState.topicSelectedAcs = c.acs;
-        }
-        // Merge search result and chat list. 
-        // newState.searchableContacts = this.prepareSearchableContacts(newState.chatList, this.data.searchResults);
-      });
-      this.setData({
-        chatList: this.deriveStateFromChatlist(newState.chatList),
-        ready: true
-      });
-    },
-    // Handle error
-    handleError(err = '', errorLevel = null, errorAction = undefined, errorActionText = null) {
-      this.setData({
-        err,
-        errorLevel,
-        errorAction,
-        errorActionText
-      });
-    },
-    // User clicked login button in the side panel
-    handleLoginRequest() {
-      this.setData({
-        loginDisabled: true,
-        autoLogin: true
-      });
-      this.handleError('', null);
-
-      if (this.tinode.isConnected()) {
-        this.doLogin(this.data.login, this.data.password, {
-          meth: this.credMethod,
-          resp: this.credCode
-        })
-      } else {
-        this.tinode.connect().catch((err) => {
-          this.setData({
             loginDisabled: false,
+            credMethod: null,
+            credCode: null,
             autoLogin: false
           });
-          this.handleError(err.message, 'err');
+          this.handleError(err.message, 'danger')
+          wx.removeStorageSync('auth-token');
         });
+      } else {
+        // No login credentials provided.
+        this.setData({loginDisabled: false});
       }
     },
-
-    /* Handle login in successfully
-     */
+    // TODO
+    handleCredentialsRequest(params) {
+      this.setData({sidePanelSelected: 'cred', credMethod: params.cred[0]})
+    },
+    // Handle login in successfully
     handleLoginSuccessful() {
-      this.handleError();
       // Refresh authentication token.
       if (wx.getStorageSync('keep-logged-in')) {
         wx.setStorageSync('auth-token', this.tinode.getAuthToken());
@@ -408,11 +221,11 @@ Component({
       me.onSubsUpdated = this.tnMeSubsUpdated;
       this.setData({
         connected: true,
-        credMethod: undefined,
-        credCode: undefined,
+        credMethod: null,
+        credCode: null,
         myUserId: this.tinode.getCurrentUserID(),
         autoLogin: true,
-        requestedTopic: undefined
+        requestedTopic: null
       });
       // Subscribe, fetch topic desc, the list of subscriptions. Messages are not fetched.
       me.subscribe(
@@ -420,16 +233,15 @@ Component({
       ).catch((err) => {
         this.tinode.disconnect();
         wx.removeStorageSync('auto-token');
-        this.handleError(err.message, 'err');
+        this.handleError(err.message, 'danger');
       }).finally(() => {
+        // this.tnInitFind();
         this.setData({
           sidePanelSelected: 'contacts'
         });
       });
     },
-
-    /* Setup me topic
-     */
+    // Setup me topic
     tnMeMetaDesc(desc) {
       if (desc) {
         if (desc.public) {
@@ -499,13 +311,196 @@ Component({
         console.log("Unsupported (yet) presence update:" + what + " in: " + cont.topic);
       }
     },
-
-    /* Setup contact list
-     */
+    // Setup contact list
     tnMeSubsUpdated() {
       this.resetContactList();
     },
+    // Merge search results and contact list to create a single flat
+    // list of known contacts for GroupManager to use.
+    prepareSearchableContacts(chatList, foundContacts) {
+      const merged = {};
 
+      // For chatList topics merge only p2p topics and convert them to the
+      // same format as foundContacts.
+      for (const c of chatList) {
+        if (Tinode.isP2PTopicName(c.topic)) {
+          merged[c.topic] = {
+            user: c.topic,
+            updated: c.updated,
+            public: c.public,
+            private: c.private,
+            acs: c.acs
+          };
+        }
+      }
+
+      // Add all foundCountacts if they have not been added already.
+      for (const c of foundContacts) {
+        if (!merged[c.user]) {
+          merged[c.user] = c;
+        }
+      }
+      return Object.values(merged);
+    },
+    // Extract useful prop from chat list object
+    extractFromChat(chat) {
+      let useProp = ["acs", "name", "online", "private", "public", "topic", "unread"];
+      const extractChat = {};
+      for (var i=0; i<useProp.length; i++) {
+        extractChat[useProp[i]] = chat[useProp[i]];
+      }
+      extractChat.avatar = makeAvatorUrl(extractChat);
+      return extractChat;
+    },
+    // Derive State from chatlist object
+    deriveStateFromChatlist(chatlist) {
+      const contacts = [];
+      let unreadThreads = 0;
+      let archivedCount = 0;
+      chatlist.map((c) => {
+        let _c = this.extractFromChat(c);
+        const blocked = c.acs && !c.acs.isJoiner();
+        // Show only blocked contacts only when props.blocked == true.
+        if (blocked && this.data.blocked) {
+          contacts.push(_c);
+        } 
+        if (blocked || this.data.blocked) {
+          return;
+        }
+      
+        if (c.private && c.private.arch) {
+          if (this.data.archive) {
+            contacts.push(_c);
+          } else {
+            archivedCount++;
+          }
+        } else if (!this.data.archived) {
+          contacts.push(_c);
+          unreadThreads += c.unread > 0 ? 1 : 0;
+        }
+      });
+      return {
+        chatList: contacts,
+        unreadThreads: unreadThreads
+      };
+    },
+
+    /* Helper function to set or read contact from local
+     */
+    resetContactList() {
+      const newState = {
+        chatList: []
+      };
+
+      if (!this.data.ready) {
+        newState.ready = true;
+      }
+
+      this.tinode.getMeTopic().contacts((c) => {
+        if (!c.topic && !c.user) {
+          // Contacts expect c.topic to be set
+          c.topic = c.name;
+        }
+        newState.chatList.push(c);
+        if (this.data.topicSelected == c.topic) {
+          newState.topicSelectedOnline = c.online;
+          newState.topicSelectedAcs = c.acs;
+        }
+        // Merge search result and chat list. 
+        newState.searchableContacts = this.prepareSearchableContacts(newState.chatList, this.data.searchResults);
+        let derivedChatlist = this.deriveStateFromChatlist(newState.chatList);
+        newState.chatList = derivedChatlist.chatList;
+        newState.unreadThreads = derivedChatlist.unreadThreads;
+      });
+      this.setData(newState);
+    },
+    // Sending "received" notification
+    tnData(data) {
+      const topic = this.tinode.getTopic(data.topic);
+      if (topic.msgStatus(data, true) >= Tinode.MESSAGE_STATUS_SENT && data.from != this.state.myUserId) {
+        clearTimeout(this.receivedTimer);
+        this.receivedTimer = setTimeout(() => {
+          this.receivedTimer = undefined;
+          topic.noteRecv(data.seq);
+        }, RECEIVED_DELAY);
+      }
+    },
+    // Fnd topic: find contacts by tokens
+    tnInitFind() {
+      const fnd = this.tinode.getFndTopic();
+      fnd.onSubsUpdated = this.tnFndSubsUpdated;
+      if (fnd.isSubscribed()) {
+        this.tnFndSubsUpdated();
+      } else {
+        fnd.subscribe(fnd.startMetaQuery().withSub().build()).catch((err) => {
+          this.handleError(err.message, 'danger');
+        });
+      }
+    },
+    tnFndSubsUpdated() {
+      const foundContacts = [];
+      // Don't attempt to create P2P topics which already exist. Server will reject the duplicates.
+      this.tinode.getFndTopic().contacts((s) => {
+        foundContacts.push(s);
+      });
+      this.setData({
+        searchResults: foundContacts,
+        searchableContacts: this.prepareSearchableContacts(this.data.chatList, foundContacts)
+      });
+    },
+    /** Called when the user enters a contact into the contact search field in the NewAccount panel
+      @param query {Array} is an array of contacts to search for
+    */
+    handleSearchContacts(evt) {
+      this.tnInitFind();
+      const fnd = this.tinode.getFndTopic();
+      fnd.setMeta({desc: {public: evt.detail}}).then((ctrl) => {
+        return fnd.getMeta(fnd.startMetaQuery().withSub().build());
+      }).catch((err) => {
+        this.handleError(err.message, 'danger');
+      }).finally(() => {
+        this.setData({sidePanelSelected: 'new-contacts'});
+      });
+    },
+    // User clicked login button in the side panel
+    handleLoginRequest() {
+      this.setData({loginDisabled: true, autoLogin: true});
+      if (this.tinode.isConnected()) {
+        this.doLogin(this.data.login, this.data.password, {meth: this.data.credMethod, resp: this.data.credCode});
+      } else {
+        this.tinode.connect().catch((err) => {
+          this.setData({loginDisabled: false, autoLogin: false});
+          this.handleError(err.message, 'danger');
+        });
+      }
+    },
+    // Registration of a new account
+    handleSubmit() {
+      this.setData({errorCleared: false});
+      this.handleNewAccountRequest(
+        this.data.login.trim(),
+        this.data.password.trim(),
+        theCard(this.data.fn.trim().substring(0, MAX_TITLE_LENGTH), this.data.imageDataUrl),
+        {'meth': 'email', 'val': this.data.email});
+    },
+    handleNewAccountRequest(login_, password_, public_, cred_, tags_) {
+      // Clear old error, if any.
+      this.handleError();
+  
+      this.tinode.connect(this.data.serverAddress)
+        .then(() => {
+          return this.tinode.createAccountBasic(login_, password_,
+            {public: public_, tags: tags_, cred: Tinode.credential(cred_)});
+        }).then((ctrl) => {
+          if (ctrl.code >= 300 && ctrl.text == 'validate credentials') {
+            this.handleCredentialsRequest(ctrl.params);
+          } else {
+            this.handleLoginSuccessful();
+          }
+        }).catch((err) => {
+          this.handleError(err.message, 'err');
+        });
+    },
     // User clicked on a contact in the side panel or deleted a contact.
     handleTopicSelected(event) {
       const item = event.currentTarget.dataset.item;
@@ -518,11 +513,7 @@ Component({
       }
 
       if (topicName) {
-        this.setData({
-          errorText: '',
-          errorLevel: null,
-          sidePanelSelected: 'message-view'
-        });
+        this.setData({sidePanelSelected: 'message-view'});
         // Different contact selected.
         if (this.data.topicSelected != topicName) {
           this.setData({
@@ -534,12 +525,7 @@ Component({
         }
       } else {
         // Currently selected contact deleted
-        this.setData({
-          errorText: '',
-          errorLevel: null,
-          topicSelectedOnline: null,
-          topicSelectedAcs: null
-        });
+        this.setData({topicSelectedOnline: null, topicSelectedAcs: null});
       }
       this.renderMessageView(null);
     },
@@ -553,6 +539,7 @@ Component({
       const topic = this.tinode.getTopic(this.data.topicSelected);
 
       msg = topic.createMessage(msg, false);
+      console.log("msg", msg);
       // The uploader is used to show progress.
       msg._uploader = uploader;
 
@@ -560,30 +547,43 @@ Component({
         if (!promise) {
           promise = Promise.resolve();
         }
-        promise = promise.then(() => {
-          return topic.subscribe();
+        promise = promise.then(() => { return topic.subscribe(); });
+      }
+  
+      if (promise) {
+        promise = promise.catch((err) => {
+          this.handleError(err.message, 'danger');
         });
-
-        if (promise) {
-          promise = promise.catch((err) => {
-            this.handleError(err.message, 'err');
-          });
-        }
-
-        topic.publishDraft(msg, promise)
-          .then((ctrl) => {
-            if (topic.isArchived()) {
-              return topic.archive(false);
-            }
-          })
-          .catch((err) => {
-            this.handleError(err.message, 'err');
-          });
+      }
+  
+      topic.publishDraft(msg, promise)
+        .then((ctrl) => {
+          if (topic.isArchived()) {
+            return topic.archive(false);
+          }
+        })
+        .catch((err) => {
+          this.handleError(err.message, 'err');
+        });
+    },
+    // User send messgae
+    handleSend(evt) {
+      const message = evt.detail.trim();
+      if (message) {
+        this.handleSendMessage(message);
+        this.setData({messageValue: ''});
       }
     },
-    /* Leave the old topic
-    */
-    level(oldTopicName) {
+    // User chose 'Archived chats'.
+    handleShowArchive() {
+      this.setData({'archive': true});
+    },
+    // User viewes 'Blocked chats'.
+    handleShowBlocked() {
+      this.setData({'blocked': true});
+    },
+    // Leave the old topic
+    leave(oldTopicName) {
       if (!oldTopicName || !this.tinode.isTopicCached(oldTopicName)) {
         return;
       }
@@ -601,8 +601,7 @@ Component({
           });
       }
     },
-    /* Render messgae page
-    */
+    // Render messgae page
     renderMessageView(msg) {
       const topic = this.data.topicSelected ? this.tinode.getTopic(this.data.topicSelected) : undefined;
 
@@ -624,7 +623,6 @@ Component({
         }
         topic.subscribe(getQuery.build())
         .then((ctrl) => {
-          console.log("HERE MAN!", ctrl);
           if (ctrl.code == 303) {
             this.setData({
               topicSelected: ctrl.params.topic,
@@ -641,14 +639,12 @@ Component({
       const groupTopic = topic.isGroupType() && !isChannel;
       let messageNodes = [];
       let previousFrom = null;
-      let chatBoxClass = null;
 
       // Get cached messages
       topic.messages((msg, prev, next, i) => {
         let nextFrom = next ? (next.from || null) : 'chan';
         let sequence = 'single';
         let thisFrom = msg.from || 'chan';
-        chatBoxClass
         if (thisFrom == previousFrom) {
           if (thisFrom == nextFrom) {
             sequence = 'middle';
@@ -663,20 +659,15 @@ Component({
         const isReply = !(thisFrom == this.data.myUserId);
         const deliveryStatus = topic.msgStatus(msg, true);
 
-        let userName, userAvatar, userFrom;
-        if (groupTopic) {
-          const user = topic.userDesc(thisFrom);
-          if (user && user.public) {
-            userName = user.public.fn;
-            userAvatar = makeImageDataUrl(user.public.photo);
-          }
-          userFrom = thisFrom;
-          chatBoxClass = 'chat-box group';
-        } else {
-          chatBoxClass = 'chat-box';
+        var userName, userAvatar, userFrom;
+        const user = topic.userDesc(thisFrom);
+        if (user && user.public) {
+          userName = user.public.fn;
+          console.log(makeAvatorDataUrl(userName));
+          userAvatar = makeImageDataUrl(user.public.photo) || makeAvatorDataUrl(userName);
         }
+        userFrom = thisFrom;
         messageNodes.push({
-          userName: userName,
           content: msg.content,
           deteted: msg.hi,
           miniType: msg.head ? msg.head.mime: null,
@@ -695,6 +686,14 @@ Component({
       console.log("messageNodes", messageNodes);
       this.setData({ messageNodes });
     },
+    // Switch between login and signup panel
+    onLoginSwitch(evt) {
+      this.setData({"sidePanelSelected": evt.target.dataset.name});
+    },
+    // Switch back
+    onClickLeft() {
+      this.setData({ sidePanelSelected: NAVI_ROUTE[this.data.sidePanelSelected] });
+    }
   },
 
   /**
@@ -726,6 +725,7 @@ Component({
       this.tnMeContactUpdate = this.tnMeContactUpdate.bind(this);
       this.tnMeSubsUpdated = this.tnMeSubsUpdated.bind(this);
       this.renderMessageView = this.renderMessageView.bind(this);
+      this.tnFndSubsUpdated = this.tnFndSubsUpdated.bind(this);
 
       // Init event listener
       wx.onNetworkStatusChange((res) => {
@@ -737,8 +737,8 @@ Component({
       new Promise((resolve, reject) => {
         this.tinode = this.tnSetup(this.data.serverAddress, this.data.transport, this.data.locale, keepLoggedIn, resolve);
         this.tinode.onConnect = this.handleConnected;
-        // this.tinode.onDisconnect = this.handleDisconnect;
-        // this.tinode.onAutoreconnectIteration = this.handleAutoreconnectIteration;
+        this.tinode.onDisconnect = this.handleDisconnect;
+        this.tinode.onAutoreconnectIteration = this.handleAutoreconnectIteration;
       }).then(() => {
         // TODO: Desktop alerts function need to access firebase which is not available rightnow. 
         console.log("Do not implement notice push");
@@ -756,11 +756,7 @@ Component({
           token.expires = new Date(token.expires);
           this.tinode.setAuthToken(token);
           this.tinode.connect().catch((err) => {
-            // Socket error
-            this.setData({
-              errorText: errorText,
-              errorLevel: 'err'
-            });
+            this.handleError(err.message, 'danger');
           });
         }
       });

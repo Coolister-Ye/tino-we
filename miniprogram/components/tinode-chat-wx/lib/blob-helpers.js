@@ -1,5 +1,5 @@
 // File and image helper functions.
-import { MAX_INBAND_ATTACHMENT_SIZE, MAX_IMAGE_DIM } from '../config.js';
+import { MAX_INBAND_ATTACHMENT_SIZE, MAX_IMAGE_DIM, PIC_DIR } from '../config.js';
 import { bytesToHumanSize } from './strformat.js'
 
 // Supported image MIME types and corresponding file extensions.
@@ -209,4 +209,22 @@ export function base64ReEncode(str) {
     }
   }
   return str;
+}
+
+export function makeAvatorUrl(extractChat) {
+  if (extractChat.public && extractChat.public.photo) {
+    return extractChat.public.photo;
+  } else if (extractChat.public && extractChat.public.fn) {
+    return PIC_DIR + "cat" + extractChat.public.fn.charAt(1).charCodeAt().toString().charAt(1) + ".png";
+  } else {
+    return PIC_DIR + "stranger.png"
+  }
+}
+
+export function makeAvatorDataUrl(userName) {
+  if (userName) {
+    return PIC_DIR + "cat" + userName.charAt(1).charCodeAt().toString().charAt(1) + ".png";
+  } else {
+    return PIC_DIR + "stranger.png"
+  }
 }

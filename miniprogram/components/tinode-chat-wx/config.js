@@ -54,4 +54,17 @@ export const MESSAGES = {
   }
 };
 
+// Pictures storage location
 export const PIC_DIR = "../../../../components/tinode-chat-wx/pic/";
+
+// Icon file
+export const ICON_FN = PIC_DIR + "T-01.png";
+
+// Max length of account
+export const MAX_TITLE_LENGTH = 15;
+
+// Navigator route
+export const NAVI_ROUTE = {
+  "new-contacts": "contacts",
+  "message-view": "contacts"
+}

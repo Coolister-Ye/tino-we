@@ -1,49 +1,31 @@
-const messages = defineMessages({
-  archived_contacts_title: {
-    id: "archived_contacts",
-    defaultMessage: "Archived contacts ({count})",
-    description: "Label for archived chats"
-  }
-});
+// Create theCard which represents user's or topic's "public" info.
+export function theCard(fn, imageUrl, imageMimeType) {
+  let card = null;
+  fn = fn && fn.trim();
 
-export default class Toolbox {
-  // Get the status from chatlist props
-  static deriveStateFromProps(props) {
-    const contacts = [];
-    let unreadThread = 0;
-    let archivedCount = 0;
-    props.chatList.map((c) => {
-      const blocked = c.acs && c.acs.isJoiner();
-      // Show only blocked contacts only when props.blocked == true.
-      if (blocked && props.blocked) {
-        contacts.push(c);
-      }
-      if (blocked || props.blocked) {
-        return;
-      }
-      if (c.private && c.private.arch) {
-        if (props.archive) {
-          contacts.push(c);
-        } else {
-          archivedCount ++;
-        } 
-      } else if (!props.archive) {
-        contacts.push(c);
-        unreadThread += c.unread > 0 ? 1 : 0;
-      }
-    });
-
-    contacts.sort((a, b) => {
-      contacts.push({
-        action: 'archive',
-        title: messages.archived_contacts_title,
-        values: {count: archivedCount}
-      });
-    });
-
-    return {
-      contactList: contacts,
-      unreadThreads: unreadThreads
+  if (fn) {
+    card = {
+      fn: fn
     };
   }
+
+  if (imageUrl) {
+    card = card || {};
+    let mimeType = imageMimeType;
+    // Is this a data URL "data:[<mediatype>][;base64],<data>"?
+    const matches = /^data:(image\/[-a-z0-9+.]+)?(;base64)?,/i.exec(imageUrl);
+    if (matches) {
+      mimeType = matches[1];
+      card.photo = {
+        data: imageUrl.substring(imageUrl.indexOf(',') + 1)
+      };
+    } else {
+      card.photo = {
+        ref: imageUrl
+      };
+    }
+    card.photo.type = (mimeType || 'image/jpeg').substring('image/'.length);
+  }
+
+  return card;
 }
