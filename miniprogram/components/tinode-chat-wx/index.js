@@ -1,9 +1,8 @@
-import { KNOWN_HOSTS, DEFAULT_HOST, MESSAGES, APP_NAME, API_KEY, LOGGING_ENABLED, PIC_DIR, ICON_FN, MAX_TITLE_LENGTH, NAVI_ROUTE } from './config';
+import { KNOWN_HOSTS, DEFAULT_HOST, MESSAGES, APP_NAME, API_KEY, LOGGING_ENABLED, PIC_DIR, ICON_FN, MAX_TITLE_LENGTH, MIN_TITLE_LENGTH, MIN_PASSWD_LENGTH, NAVI_ROUTE } from './config';
 import { secondToTime } from './lib/strformat';
-import { base64ReEncode, makeImageDataUrl, makeAvatorUrl, makeAvatorDataUrl } from './lib/blob-helpers';
+import { makeImageDataUrl, makeAvatorUrl, makeAvatorDataUrl } from './lib/blob-helpers';
 import { theCard } from './lib/toolbox';
 
-import Notify from '../../miniprogram_npm/@vant/weapp/notify/notify';
 import Toast from '../../miniprogram_npm//@vant/weapp/toast/toast';
 
 const Tinode = require('./tinode.prod');
@@ -76,7 +75,9 @@ Component({
     // show blocked contacts
     blocked: false,
     // show archive contacts
-    archive: false
+    archive: false,
+    // Upload avatar file
+    fileList: []
   },
 
   /**
@@ -247,7 +248,7 @@ Component({
         if (desc.public) {
           this.setData({
             sidePanelTitle: desc.public.fn,
-            sidePanelAvatar: makeImageDataUrl(desc.public.photo)
+            sidePanelAvatar: makeImageDataUrl(desc.public.photo, desc.public.fn)
           });
         }
         if (desc.acs) {
@@ -443,6 +444,7 @@ Component({
       this.tinode.getFndTopic().contacts((s) => {
         foundContacts.push(s);
       });
+      console.log("foundContacts", foundContacts);
       this.setData({
         searchResults: foundContacts,
         searchableContacts: this.prepareSearchableContacts(this.data.chatList, foundContacts)
@@ -475,13 +477,37 @@ Component({
       }
     },
     // Registration of a new account
+    // Upload avatar file
+    handleUploadAvatar(evt) {
+      const { file } = evt.detail;
+      const fs = wx.getFileSystemManager();
+      const avatarArrayBuffer = fs.readFileSync(file.url);
+      const avatarBase64 = wx.arrayBufferToBase64(avatarArrayBuffer);
+      this.setData({avatarData: avatarBase64, avatarType: file.url.split('.').pop(), fileList: [file]});
+    },
     handleSubmit() {
-      this.setData({errorCleared: false});
-      this.handleNewAccountRequest(
-        this.data.login.trim(),
-        this.data.password.trim(),
-        theCard(this.data.fn.trim().substring(0, MAX_TITLE_LENGTH), this.data.imageDataUrl),
-        {'meth': 'email', 'val': this.data.email});
+      const loginLength = this.data.login.trim().length;
+      const passwordLength = this.data.password.trim().length;
+      var errorMsg = "";
+      if (loginLength > MAX_TITLE_LENGTH) {
+        errorMsg += MESSAGES.user_name_max.defaultMessage;
+      } else if (loginLength < MIN_TITLE_LENGTH) {
+        errorMsg += MESSAGES.user_name_min.defaultMessage;
+      }
+
+      if (passwordLength < MIN_PASSWD_LENGTH) {
+        errorMsg += '\n' + MESSAGES.password_max.defaultMessage;
+      }
+
+      if (errorMsg == "") {
+        this.handleNewAccountRequest(
+          this.data.login.trim(),
+          this.data.password.trim(),
+          theCard(this.data.login.trim(), this.data.avatarData, this.data.avatarType),
+          {'meth': 'email', 'val': this.data.email});
+      } else {
+        this.handleError(errorMsg, 'danger');
+      }
     },
     handleNewAccountRequest(login_, password_, public_, cred_, tags_) {
       // Clear old error, if any.

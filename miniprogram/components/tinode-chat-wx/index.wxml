@@ -5,7 +5,7 @@
   <van-popup show="{{ sidePanelSelected === 'login' || sidePanelSelected === 'signup'}}" position="left" bind:close="onClose" custom-style="height: 100%; width: 100%;">
     <view class="main-icon">
       <van-icon wx:if="{{ sidePanelSelected === 'login' }}" name="{{ iconFile }}" size="150px"/>
-      <van-uploader wx:else="{{ sidePanelSelected === 'signup' }}" file-list="{{ fileList }}" bind:after-read="afterRead"/>
+      <van-uploader wx:else="{{ sidePanelSelected === 'signup' }}" file-list="{{ fileList }}" bind:after-read="handleUploadAvatar" max-count="1"/>
     </view>
     <view class="login-info-container">
       <van-cell center title="Tinode-We" value="{{ serverVersion }}" border="{{ false }}" size="large"></van-cell>
@@ -27,7 +27,9 @@
 <!-- Concact view -->
 <view class="contact-view" wx:if="{{ sidePanelSelected === 'contacts' }}">
   <van-popup show="{{ sidePanelSelected === 'contacts' }}" position="left" bind:close="onClose"custom-style="height: 100%; width: 100%;">
-    <van-nav-bar title="Tinode-We"/>
+    <van-nav-bar title="Tinode-We">
+      <van-icon name="{{ sidePanelAvatar }}" slot="left" size="50px"/>
+    </van-nav-bar>
     <van-search value="{{ value }}" placeholder="Find your friends" bind:search="handleSearchContacts"/>
     <text wx:if="{{ chatList.length === 0 }}">You have no chats yet.</text>
     <view wx:for="{{ chatList }}" wx:key="name">
@@ -43,9 +45,11 @@
 <!-- New concact view -->
 <view class="new-contact-view" wx:if="{{ sidePanelSelected === 'new-contacts' }}">
   <van-popup show="{{ sidePanelSelected === 'new-contacts' }}" position="left" bind:close="onClose"custom-style="height: 100%; width: 100%;">
-    <van-nav-bar title="Tinode-We" left-arrow bind:click-left="onClickLeft" fixed="true"/>
+    <van-nav-bar title="Tinode-We" left-arrow bind:click-left="onClickLeft">
+      <van-icon name="{{ sidePanelAvatar }}" slot="left" size="50px"/>
+    </van-nav-bar>
     <van-search value="{{ value }}" placeholder="Find your friends" bind:search="handleSearchContacts"/>
-    <text wx:if="{{ searchResults.length === 0 }}">blank</text>
+    <text wx:if="{{ searchResults.length === 0 }}"></text>
     <view wx:for="{{ searchResults }}" wx:key="name">
       <view bindtap="handleTopicSelected" data-item="{{ item }}">
         <van-cell center size="large" title="{{ item.public.fn ? item.public.fn : 'Unnamed' }}" value="{{ item.online ? 'Online': 'Offline' }}">

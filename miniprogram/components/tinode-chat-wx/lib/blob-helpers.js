@@ -7,12 +7,14 @@ export const SUPPORTED_IMAGE_FORMATS = ['image/jpeg', 'image/gif', 'image/png', 
 export const MIME_EXTENSIONS         = ['jpg',        'gif',       'png',       'svg',       'svg'];
 
 // Make a data: URL from public.photo
-export function makeImageDataUrl(photo) {
+export function makeImageDataUrl(photo, avatarName) {
   if (photo) {
     if (photo.data && photo.type) {
-      return 'data:image/' + photo.type + ';base64,' + photo.data;
+      let avatarArrayBuffer = wx.base64ToArrayBuffer(photo.data);
+      const fs = wx.getFileSystemManager();
+      let res = fs.writeFileSync(`${wx.env.USER_DATA_PATH}/avatarName.${photo.type}`, avatarArrayBuffer, 'utf8');
+      return `${wx.env.USER_DATA_PATH}/avatarName.${photo.type}`;
     }
-    return photo.ref;
   }
   return null;
 }

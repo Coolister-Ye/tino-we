@@ -16,6 +16,15 @@ export const DEFAULT_HOST = KNOWN_HOSTS.hosted;
 // Enable console logging.
 export const LOGGING_ENABLED = true;
 
+// Max length of account
+export const MAX_TITLE_LENGTH = 15;
+
+// Min length of account
+export const MIN_TITLE_LENGTH = 3;
+
+// Min password
+export const MIN_PASSWD_LENGTH = 8;
+
 export const MESSAGES = {
   reconnect_countdown: {
     id: 'reconnect_countdown',
@@ -51,7 +60,22 @@ export const MESSAGES = {
     id: 'menu_item_info',
     defaultMessage: 'Info',
     description: 'Show extended topic information'
-  }
+  },
+  user_name_max: {
+    id: 'user_name_max',
+    defaultMessage: 'Length if user must be less than ' + MAX_TITLE_LENGTH,
+    description: 'User name out of range'
+  },
+  user_name_min: {
+    id: 'user_name_min',
+    defaultMessage: 'Length if user must be larger than ' + MIN_TITLE_LENGTH,
+    description: 'User name out of range'
+  },
+  password_max: {
+    id: 'user_name_max',
+    defaultMessage: 'Length if user must be less than ' + MIN_PASSWD_LENGTH,
+    description: 'Password out of range'
+  },
 };
 
 // Pictures storage location
@@ -59,9 +83,6 @@ export const PIC_DIR = "../../../../components/tinode-chat-wx/pic/";
 
 // Icon file
 export const ICON_FN = PIC_DIR + "T-01.png";
-
-// Max length of account
-export const MAX_TITLE_LENGTH = 15;
 
 // Navigator route
 export const NAVI_ROUTE = {

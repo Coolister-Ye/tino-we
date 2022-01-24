@@ -1,4 +1,3 @@
 <!--miniprogram/pages/chat/index.wxml-->
-<!-- <my-mv tinode="{{ tinode }}" check="{{ check }}" topic="tinode5"></my-mv> -->
-<my-im myServerAddress="101.34.12.89" isLocalHost="{{ false }}"></my-im>
-<!-- <my-im isLocalHost="{{ false }}"></my-im> -->
+<!-- import tinode-we im components  -->
+<my-im myServerAddress="coolister.top:6060" isLocalHost="{{ false }}"></my-im>
