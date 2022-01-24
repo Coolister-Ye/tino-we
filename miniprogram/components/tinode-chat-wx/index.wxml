@@ -31,11 +31,11 @@
       <van-icon name="{{ sidePanelAvatar }}" slot="left" size="50px"/>
     </van-nav-bar>
     <van-search value="{{ value }}" placeholder="Find your friends" bind:search="handleSearchContacts"/>
-    <text wx:if="{{ chatList.length === 0 }}">You have no chats yet.</text>
+    <van-empty wx:if="{{ chatList.length === 0 }}" image="search" description="Don't have friends now!"/>
     <view wx:for="{{ chatList }}" wx:key="name">
       <view bindtap="handleTopicSelected" data-item="{{ item }}">
         <van-cell center size="large" title="{{ item.public.fn ? item.public.fn : 'Unnamed' }}" value="{{ item.online ? 'Online': 'Offline' }}">
-          <van-icon slot="icon" name="{{ item.avatar }}" info="{{ item.unread == 0 ? '' : item.unread }}" class="custom-icon" size="50px"/>
+          <van-icon slot="icon" name="{{ item.avatar }}" info="{{ item.unread == 0 ? '' : item.unread }}" class="custom-icon" size="45px"/>
         </van-cell>
       </view>
     </view>
@@ -49,11 +49,11 @@
       <van-icon name="{{ sidePanelAvatar }}" slot="left" size="50px"/>
     </van-nav-bar>
     <van-search value="{{ value }}" placeholder="Find your friends" bind:search="handleSearchContacts"/>
-    <text wx:if="{{ searchResults.length === 0 }}"></text>
+    <van-empty wx:if="{{ searchResults.length === 0 }}" image="search" description="Cannot find this id!"/>
     <view wx:for="{{ searchResults }}" wx:key="name">
       <view bindtap="handleTopicSelected" data-item="{{ item }}">
         <van-cell center size="large" title="{{ item.public.fn ? item.public.fn : 'Unnamed' }}" value="{{ item.online ? 'Online': 'Offline' }}">
-          <van-icon slot="icon" name="{{ item.avatar }}" info="{{ item.unread }}" class="custom-icon" size="50px"/>
+          <van-icon slot="icon" name="{{ item.avatar }}" class="custom-icon" size="50px"/>
         </van-cell>
       </view>
     </view>

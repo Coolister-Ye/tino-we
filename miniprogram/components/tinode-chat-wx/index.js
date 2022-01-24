@@ -236,7 +236,7 @@ Component({
         wx.removeStorageSync('auto-token');
         this.handleError(err.message, 'danger');
       }).finally(() => {
-        // this.tnInitFind();
+        this.tnInitFind();
         this.setData({
           sidePanelSelected: 'contacts'
         });
@@ -442,6 +442,7 @@ Component({
       const foundContacts = [];
       // Don't attempt to create P2P topics which already exist. Server will reject the duplicates.
       this.tinode.getFndTopic().contacts((s) => {
+        s.avatar = makeImageDataUrl(s.public.photo, s.public.fn);
         foundContacts.push(s);
       });
       console.log("foundContacts", foundContacts);
@@ -450,11 +451,11 @@ Component({
         searchableContacts: this.prepareSearchableContacts(this.data.chatList, foundContacts)
       });
     },
-    /** Called when the user enters a contact into the contact search field in the NewAccount panel
-      @param query {Array} is an array of contacts to search for
+    /* Called when the user enters a contact into the contact search field in the NewAccount panel
+    ** @param query {Array} is an array of contacts to search for
     */
     handleSearchContacts(evt) {
-      this.tnInitFind();
+      // this.tnInitFind();
       const fnd = this.tinode.getFndTopic();
       fnd.setMeta({desc: {public: evt.detail}}).then((ctrl) => {
         return fnd.getMeta(fnd.startMetaQuery().withSub().build());
@@ -689,8 +690,7 @@ Component({
         const user = topic.userDesc(thisFrom);
         if (user && user.public) {
           userName = user.public.fn;
-          console.log(makeAvatorDataUrl(userName));
-          userAvatar = makeImageDataUrl(user.public.photo) || makeAvatorDataUrl(userName);
+          userAvatar = makeImageDataUrl(desc.public.photo, desc.public.fn) || makeAvatorDataUrl(userName);
         }
         userFrom = thisFrom;
         messageNodes.push({

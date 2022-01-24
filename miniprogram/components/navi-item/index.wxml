@@ -1,6 +1,0 @@
-<!--components/navi-item/index.wxml-->
-<view class="item-wrapper">
-  <view class="text-wrapper">
-    <view>{{ info.message }}</view>
-  </view>
-</view>

@@ -10,10 +10,17 @@ export const MIME_EXTENSIONS         = ['jpg',        'gif',       'png',       
 export function makeImageDataUrl(photo, avatarName) {
   if (photo) {
     if (photo.data && photo.type) {
-      let avatarArrayBuffer = wx.base64ToArrayBuffer(photo.data);
       const fs = wx.getFileSystemManager();
-      let res = fs.writeFileSync(`${wx.env.USER_DATA_PATH}/avatarName.${photo.type}`, avatarArrayBuffer, 'utf8');
-      return `${wx.env.USER_DATA_PATH}/avatarName.${photo.type}`;
+      let tmpFilePath = `${wx.env.USER_DATA_PATH}/${avatarName}.${photo.type}`;
+      fs.access({
+        path: tmpFilePath,
+        success(res) {/*Do Nothing*/},
+        fail(res) {
+          let avatarArrayBuffer = wx.base64ToArrayBuffer(photo.data);
+          fs.writeFileSync(tmpFilePath, avatarArrayBuffer, 'utf8');
+        }
+      });
+      return tmpFilePath;
     }
   }
   return null;
