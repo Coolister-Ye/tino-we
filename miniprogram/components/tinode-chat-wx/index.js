@@ -350,7 +350,7 @@ Component({
       for (var i=0; i<useProp.length; i++) {
         extractChat[useProp[i]] = chat[useProp[i]];
       }
-      extractChat.avatar = makeAvatorUrl(extractChat);
+      extractChat.avatar = makeImageDataUrl(extractChat.public.photo, extractChat.public.fn) || makeAvatorUrl(extractChat);
       return extractChat;
     },
     // Derive State from chatlist object
@@ -413,6 +413,7 @@ Component({
         newState.chatList = derivedChatlist.chatList;
         newState.unreadThreads = derivedChatlist.unreadThreads;
       });
+      console.log("newState", newState);
       this.setData(newState);
     },
     // Sending "received" notification
@@ -531,7 +532,7 @@ Component({
     // User clicked on a contact in the side panel or deleted a contact.
     handleTopicSelected(event) {
       const item = event.currentTarget.dataset.item;
-      const topicName = item.topic;
+      const topicName = item.topic ? item.topic : item.user;
       // Clear newTopicParams after use.
       if (this.data.newTopicParams && this.data.newTopicParams.topicName != topicName) {
         this.setData({
@@ -690,7 +691,7 @@ Component({
         const user = topic.userDesc(thisFrom);
         if (user && user.public) {
           userName = user.public.fn;
-          userAvatar = makeImageDataUrl(desc.public.photo, desc.public.fn) || makeAvatorDataUrl(userName);
+          userAvatar = makeImageDataUrl(user.public.photo, user.public.fn) || makeAvatorDataUrl(userName);
         }
         userFrom = thisFrom;
         messageNodes.push({
@@ -719,6 +720,40 @@ Component({
     // Switch back
     onClickLeft() {
       this.setData({ sidePanelSelected: NAVI_ROUTE[this.data.sidePanelSelected] });
+    },
+    // Request to start a topic, new or selected from search results, or "by ID".
+    handleStartTopicRequest(topicName, pub, priv, tags, isChannel) {
+      // Check if topic is indeed new. If not, launch it.
+      if (topicName && this.tinode.isTopicCached(topicName)) {
+        this.handleTopicSelected(topicName);
+        return;
+      }
+
+      const params = {};
+      if (Tinode.isP2PTopicName(topicName)) {
+        // Because we are initialing the subscription, set 'want' to all permissions.
+        params.sub = {mode: DEFAULT_P2P_ACCESS_MODE};
+        // Give the other user all permissions too.
+        params.desc = {defacs: {auth: DEFAULT_P2P_ACCESS_MODE}};
+      } else {
+        topicName = topicName || this.tinode.newGroupTopicName(isChannel);
+        params.desc = {public: pub, private: {comment: priv}};
+        params.tags = tags;
+      }
+      params._topicName = topicName;
+      this.setState({newTopicParams: params}, () => {this.handleTopicSelected(topicName)});
+    },
+
+    // New topic was creted, here is the new topic name.
+    handleNewTopicCreated(oldName, newName) {
+      if (this.state.topicSelected == oldName && oldName != newName) {
+        // If the current URl contains the old topic name, replace it with new.
+        // Update the name of the selected topic first so the navigator doen't clear
+        // the state.
+        this.setState({topicSelected: newName}, () => {
+          HashNavigation.navigateTo(HashNavigation.setUrlTopic('', newName));
+        });
+      }
     }
   },
 

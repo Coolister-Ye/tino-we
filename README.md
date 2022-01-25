@@ -48,6 +48,12 @@ tinode-chat的安装可以参考[tinode的文档](https://github.com/tinode/chat
 ```
 
 #### 效果截图
+![image](image/login.png)
+![image](image/signup.png)
+![image](image/contacts.png)
+![image](image/search.png)
+![image](image/chat.png)
 
 #### 更新记录
-v1.0 / 2022-01-24: 实现基础功能（登陆、新建用户、通过ID搜索好友、文字聊天）
+v1.0.0 / 2022-01-24: 实现基础功能（登陆、新建用户、通过ID搜索好友、文字聊天）
+v1.0.1 / 2022-01-24: 修复用户头像加载错误
