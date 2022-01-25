@@ -16,16 +16,16 @@ tinode-chat的安装可以参考[tinode的文档](https://github.com/tinode/chat
 
 #### 小程序配置
 小程序后端服务的ip和域名需要在服务器域名中进行配置，需要配置的项目如下：
-- request合法域名: https://yourTinodeService.com\[:port\]; https://img.yzcdn.cn (因为本项目使用了vant weapp的UI)
-- socket合法域名: wss://yourTinodeService.com\[:port\]
-- downloadFile合法域名: https://img.yzcdn.cn (因为本项目使用了vant weapp的UI)
+- request合法域名: https://yourTinodeService.com[:port]; https://img.yzcdn.cn
+- socket合法域名: wss://yourTinodeService.com[:port]
+- downloadFile合法域名: https://img.yzcdn.cn
 
 #### 安装前端tino-we客户端
 1. npm安装vant weapp
 2. 复制miniprogram/compoents/tinode-chat-wx组件到小程序项目中
 3. 新建一个小程序page，在index.wxml中引入组件
 ```
-<my-im myServerAddress="yourTinodeService.com\[:port\]" isLocalHost="{{ false }}"></my-im>
+<my-im myServerAddress="yourTinodeService.com[:port]" isLocalHost="{{ false }}"></my-im>
 ```
 4. 修改根目录下的app.json
 ```
@@ -48,12 +48,12 @@ tinode-chat的安装可以参考[tinode的文档](https://github.com/tinode/chat
 ```
 
 #### 效果截图
-![image](image/login.png)
-![image](image/signup.png)
-![image](image/contacts.png)
-![image](image/search.png)
-![image](image/chat.png)
+![image](images/login.png)
+![image](images/signup.png)
+![image](images/contacts.png)
+![image](images/search.png)
+![image](images/chat.png)
 
 #### 更新记录
-v1.0.0 / 2022-01-24: 实现基础功能（登陆、新建用户、通过ID搜索好友、文字聊天）
-v1.0.1 / 2022-01-24: 修复用户头像加载错误
+- v1.0.0 / 2022-01-24: 实现基础功能（登陆、新建用户、通过ID搜索好友、文字聊天）
+- v1.0.1 / 2022-01-24: 修复用户头像加载错误
