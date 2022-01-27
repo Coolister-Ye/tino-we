@@ -10,6 +10,9 @@ const Drafty = Tinode.Drafty;
 
 // components/tinode-chat-wx/index.js
 Component({
+  options: {
+    styleIsolation: 'shared'
+  },
   /**
    * 组件的属性列表
    */

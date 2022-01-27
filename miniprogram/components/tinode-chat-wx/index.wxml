@@ -3,6 +3,7 @@
 <!-- login panel -->
 <view class="login-panel" wx:if="{{ sidePanelSelected === 'login' || sidePanelSelected === 'signup'}}">
   <van-popup show="{{ sidePanelSelected === 'login' || sidePanelSelected === 'signup'}}" position="left" bind:close="onClose" custom-style="height: 100%; width: 100%;">
+    <view class="login-container">
     <view class="main-icon">
       <van-icon wx:if="{{ sidePanelSelected === 'login' }}" name="{{ iconFile }}" size="150px"/>
       <van-uploader wx:else="{{ sidePanelSelected === 'signup' }}" file-list="{{ fileList }}" bind:after-read="handleUploadAvatar" max-count="1"/>
@@ -20,6 +21,7 @@
     <view class="login-switch-container">
       <view wx:if="{{ sidePanelSelected === 'login' }}" data-name="signup" bindtap="onLoginSwitch">Don't have an account, signup first</view>
       <view wx:else data-name="login" bindtap="onLoginSwitch">Aleady have an account, go to login</view>
+    </view>
     </view>
   </van-popup>
 </view>

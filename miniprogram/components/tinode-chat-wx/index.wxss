@@ -78,3 +78,7 @@
     padding-left: 20px;
     padding-right: 20px;
 }
+
+.van-icon__image {
+    border-radius: 50%!important;
+}
