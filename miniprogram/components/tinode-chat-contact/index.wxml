@@ -1,0 +1,14 @@
+<!--components/tinode-chat-contact/index.wxml-->
+<view class="cantact-container">
+    <van-icon name="{{ avatarPath }}" size="{{ avatarSize }}"></van-icon>
+    <view class="info-container">
+        <view class="title-container">
+            <view class="title">{{ title }}</view>
+            <view class="preview">{{ preview }}</view>
+        </view>
+        <view class="other-info-container">
+            <view class="time">{{ updateTime }}</view>
+            <view class="online-status">{{ onlinestatus }}</view>
+        </view>
+    </view>
+</view>

@@ -12,6 +12,7 @@
   },
   "sitemapLocation": "sitemap.json",
   "usingComponents": {
-    "my-im": "./components/tinode-chat-wx"
+    "my-im": "./components/tinode-chat-wx",
+    "my-contact": "./components/tinode-chat-contact"
   }
 }

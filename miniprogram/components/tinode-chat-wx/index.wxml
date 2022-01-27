@@ -1,59 +1,67 @@
 <!--components/tinode-chat-wx/index.wxml-->
+<!-- app error message conatiner -->
 <van-toast id="van-toast" />
+
 <!-- login panel -->
 <view class="login-panel" wx:if="{{ sidePanelSelected === 'login' || sidePanelSelected === 'signup'}}">
-  <van-popup show="{{ sidePanelSelected === 'login' || sidePanelSelected === 'signup'}}" position="left" bind:close="onClose" custom-style="height: 100%; width: 100%;">
-    <view class="main-icon">
-      <van-icon wx:if="{{ sidePanelSelected === 'login' }}" name="{{ iconFile }}" size="150px"/>
-      <van-uploader wx:else="{{ sidePanelSelected === 'signup' }}" file-list="{{ fileList }}" bind:after-read="handleUploadAvatar" max-count="1"/>
-    </view>
+  <view class="main-icon">
+    <van-icon wx:if="{{ sidePanelSelected === 'login' }}" name="{{ iconFile }}" size="150px" />
+    <van-uploader wx:else="{{ sidePanelSelected === 'signup' }}" file-list="{{ fileList }}" bind:after-read="handleUploadAvatar" bind:delete="handleDeleteAvatar" max-count="1"/>
+  </view>
+  <view class="main-info">
     <view class="login-info-container">
-      <van-cell center title="Tinode-We" value="{{ serverVersion }}" border="{{ false }}" size="large"></van-cell>
-      <van-field label="UserName" model:value="{{ login }}" placeholder="Enter username" border="{{ false }}" size="large"/>
-      <van-field label="Password" model:value="{{ password }}" placeholder="Enter password" border="{{ false }}" size="large" type="password"/>
-      <van-field wx:if="{{ sidePanelSelected === 'signup' }}" label="Email" model:value="{{ email }}" placeholder="Enter email" border="{{ false }}" size="large"/> 
+      <van-cell center custom-class="main-info-title" title="{{ mainInfoTitle }}" border="{{ false }}" title-style="font-size: 25px; font-weight: 500;"/>
+      <van-field label="UserName" model:value="{{ login }}" placeholder="Enter username" border="{{ false }}" size="large" />
+      <van-field label="Password" model:value="{{ password }}" placeholder="Enter password" border="{{ false }}" size="large" type="password" />
+      <van-field wx:if="{{ sidePanelSelected === 'signup' }}" label="Email" model:value="{{ email }}" placeholder="Enter email" border="{{ false }}" size="large" />
     </view>
     <view class="login-button-container">
-      <van-button wx:if="{{ sidePanelSelected === 'login' }}" type="primary" class="login-button" block bind:click="handleLoginRequest">Login</van-button>
-      <van-button wx:else type="info" class="login-button" block bind:click="handleSubmit">Sign-up</van-button>
+      <van-button wx:if="{{ sidePanelSelected === 'login' }}" type="primary" class="login-button" block bind:click="handleLoginRequest" round color="#B4C6A6">Login</van-button>
+      <van-button wx:else type="info" class="login-button" block bind:click="handleSubmit" round color="#B4C6A6">Sign Up</van-button>
     </view>
     <view class="login-switch-container">
-      <view wx:if="{{ sidePanelSelected === 'login' }}" data-name="signup" bindtap="onLoginSwitch">Don't have an account, signup first</view>
-      <view wx:else data-name="login" bindtap="onLoginSwitch">Aleady have an account, go to login</view>
+      <view wx:if="{{ sidePanelSelected === 'login' }}" data-name="signup" bindtap="onLoginSwitch">
+        <text>Don't have an account, signup first.</text>
+      </view>
+      <view wx:else data-name="login" bindtap="onLoginSwitch">
+        <text>Aleady have an account, go to login.</text>
+      </view>
     </view>
-  </van-popup>
+  </view>
 </view>
 
 <!-- Concact view -->
-<view class="contact-view" wx:if="{{ sidePanelSelected === 'contacts' }}">
-  <van-popup show="{{ sidePanelSelected === 'contacts' }}" position="left" bind:close="onClose"custom-style="height: 100%; width: 100%;">
-    <van-nav-bar title="Tinode-We">
-      <van-icon name="{{ sidePanelAvatar }}" slot="left" size="50px"/>
+<view class="contact-view union-background" wx:if="{{ sidePanelSelected === 'contacts' }}">
+  <!-- <view class="contact-view-header"> -->
+    <van-nav-bar placeholder="true" border="{{ false }}" custom-class="union-background" fixed="{{ true }}">
+      <van-image src="{{ sidePanelAvatar }}" slot="left" height="35px" width="35px" custom-class="my-avatar" round/>
     </van-nav-bar>
-    <van-search value="{{ value }}" placeholder="Find your friends" bind:search="handleSearchContacts"/>
-    <van-empty wx:if="{{ chatList.length === 0 }}" image="search" description="Don't have friends now!"/>
+    <van-search value="{{ value }}" placeholder="Find your friends" background="#B4C6A6" bind:search="handleSearchContacts"/>
+  <!-- </view> -->
+  <scroll-view class="contact-view-body" scroll-y="{{ true }}">
     <view wx:for="{{ chatList }}" wx:key="name">
       <view bindtap="handleTopicSelected" data-item="{{ item }}">
         <van-cell center size="large" title="{{ item.public.fn ? item.public.fn : 'Unnamed' }}" value="{{ item.online ? 'Online': 'Offline' }}">
-          <van-icon slot="icon" name="{{ item.avatar }}" info="{{ item.unread == 0 ? '' : item.unread }}" class="custom-icon" size="45px"/>
+          <van-icon slot="icon" name="{{ item.avatar }}" info="{{ item.unread == 0 ? '' : item.unread }}" size="35px" />
         </van-cell>
       </view>
     </view>
-  </van-popup>
+    <van-empty wx:if="{{ chatList.length === 0 }}" image="search" description="Don't have friends now!"/>
+  </scroll-view>
 </view>
 
 <!-- New concact view -->
 <view class="new-contact-view" wx:if="{{ sidePanelSelected === 'new-contacts' }}">
-  <van-popup show="{{ sidePanelSelected === 'new-contacts' }}" position="left" bind:close="onClose"custom-style="height: 100%; width: 100%;">
+  <van-popup show="{{ sidePanelSelected === 'new-contacts' }}" position="left" bind:close="onClose" custom-style="height: 100%; width: 100%;">
     <van-nav-bar title="Tinode-We" left-arrow bind:click-left="onClickLeft">
-      <van-icon name="{{ sidePanelAvatar }}" slot="left" size="50px"/>
+      <van-icon name="{{ sidePanelAvatar }}" slot="left" size="50px" />
     </van-nav-bar>
-    <van-search value="{{ value }}" placeholder="Find your friends" bind:search="handleSearchContacts"/>
-    <van-empty wx:if="{{ searchResults.length === 0 }}" image="search" description="Cannot find this id!"/>
+    <van-search value="{{ value }}" placeholder="Find your friends" bind:search="handleSearchContacts" />
+    <van-empty wx:if="{{ searchResults.length === 0 }}" image="search" description="Cannot find this id!" />
     <view wx:for="{{ searchResults }}" wx:key="name">
       <view bindtap="handleTopicSelected" data-item="{{ item }}">
         <van-cell center size="large" title="{{ item.public.fn ? item.public.fn : 'Unnamed' }}" value="{{ item.online ? 'Online': 'Offline' }}">
-          <van-icon slot="icon" name="{{ item.avatar }}" class="custom-icon" size="50px"/>
+          <van-icon slot="icon" name="{{ item.avatar }}" class="custom-icon" size="50px" />
         </van-cell>
       </view>
     </view>
@@ -62,17 +70,17 @@
 
 <!-- Message view -->
 <view class="message-view" wx:if="{{ topicSelected }}">
-  <van-nav-bar title="Tinode-We" left-arrow bind:click-left="onClickLeft" fixed="true" placeholder="true"/>
+  <van-nav-bar title="Tinode-We" left-arrow bind:click-left="onClickLeft" fixed="true" placeholder="true" />
   <scroll-view class="message-container" scroll-y="true">
     <view class="{{ item.reponse ? 'node-container-left' : 'node-container-right' }}" wx:for="{{ messageNodes }}" wx:key="key">
-      <van-image class="avatar-container" round src="{{ item.userAvatar }}" height="30px" width="30px"/>
-      <view class="chat-container"> 
+      <van-image class="avatar-container" round src="{{ item.userAvatar }}" height="30px" width="30px" />
+      <view class="chat-container">
         <view class="chat-user-name">{{ item.userName }}</view>
         <view class="chat-content">{{ item.content }}</view>
       </view>
     </view>
   </scroll-view>
   <view class="input-box">
-    <van-field value="{{ messageValue }}" border="{{ false }}" bind:confirm="handleSend"/>
+    <van-field value="{{ messageValue }}" border="{{ false }}" bind:confirm="handleSend" />
   </view>
 </view>
