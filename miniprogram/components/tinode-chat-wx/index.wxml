@@ -39,7 +39,7 @@
 
 <!-- Concact view -->
 <view class="contact-view union-background" wx:if="{{ sidePanelSelected === 'contacts' }}">
-  <van-nav-bar placeholder="true" border="{{ false }}" custom-class="union-background" fixed="{{ true }}">
+  <van-nav-bar placeholder="{{ true }}" border="{{ false }}" custom-class="union-background" fixed="{{ true }}">
     <van-image src="{{ sidePanelAvatar }}" slot="left" height="35px" width="35px" custom-class="my-avatar" round />
   </van-nav-bar>
   <van-search value="{{ value }}" placeholder="Find your friends" background="#B4C6A6"
@@ -57,9 +57,9 @@
 
 <!-- New concact view -->
 <view class="new-contact-view" wx:if="{{ sidePanelSelected === 'new-contacts' }}">
-  <van-popup show="{{ sidePanelSelected === 'new-contacts' }}" position="left" bind:close="onClose"
-    custom-style="height: 100%; width: 100%;">
-    <van-nav-bar placeholder="true" border="{{ false }}" custom-class="union-background" fixed="{{ true }}" left-arrow
+  <!-- <van-popup show="{{ sidePanelSelected === 'new-contacts' }}" position="left" bind:close="onClose"
+    custom-style="height: 100%; width: 100%;"> -->
+    <van-nav-bar placeholder="{{ true }}" border="{{ false }}" custom-class="union-background" fixed="{{ true }}" left-arrow
       bind:click-left="onClickLeft" />
     <van-search value="{{ value }}" placeholder="Find your friends" background="#B4C6A6"
       bind:search="handleSearchContacts" />
@@ -72,7 +72,7 @@
         </view>
       </view>
     </scroll-view>
-  </van-popup>
+  <!-- </van-popup> -->
 </view>
 
 <!-- Message view -->
