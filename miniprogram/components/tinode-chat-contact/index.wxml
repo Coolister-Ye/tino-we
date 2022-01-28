@@ -1,0 +1,17 @@
+<!--components/tinode-chat-contact/index.wxml-->
+<view class="contact-conatiner">
+    <view class="main-container">
+        <van-icon name="{{ avatarPath }}" size="{{ avatarSize }}" info="{{ unread }}" custom-class="avatar"/>
+        <view class="info-container">
+            <view class="title-container">
+                <view class="title">{{ title }}</view>
+                <view class="time">{{ updateTime }}</view>
+            </view>
+            <view class="other-info-container">
+                <view class="preview">{{ preview }}</view>
+                <view class="online-status">{{ onlineStatus }}</view>
+            </view>
+        </view>
+    </view>
+    <view class="bottom-line"></view>
+</view>
