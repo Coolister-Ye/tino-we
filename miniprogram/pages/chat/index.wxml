@@ -1,3 +1,5 @@
 <!--miniprogram/pages/chat/index.wxml-->
 <!-- import tinode-we im components  -->
 <my-im myServerAddress="coolister.top:6060" isLocalHost="{{ false }}"></my-im>
+<!-- <view style="height: 100px; width: 100%;"></view>
+<my-contact></my-contact> -->

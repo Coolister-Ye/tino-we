@@ -12,6 +12,7 @@
     "van-uploader": "@vant/weapp/uploader/index",
     "van-empty": "@vant/weapp/empty/index",
     "van-cell": "@vant/weapp/cell/index",
-    "van-cell-group": "@vant/weapp/cell-group/index"
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "contact-tab": "../tinode-chat-contact/index"
   }
 }

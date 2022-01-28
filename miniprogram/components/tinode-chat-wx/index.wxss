@@ -17,13 +17,13 @@
 }
 
 .login-info-container {
-    margin-bottom: 5px;
+    margin-bottom: 25px;
 }
 .login-switch-container {
     margin: 10px;
     font-size: x-small;
     text-align: center;
-    color: rgb(0, 4, 255);
+    color: rgb(0, 0, 0);
 }
 
 .node-container-left {
@@ -55,6 +55,8 @@
 
 .chat-container {
     max-width: 80%;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .chat-user-name {
@@ -70,11 +72,61 @@
 .message-container {
     width: 100%;
     margin-top: 10px;
-    height: calc(100vh - 200px);
+    padding-top: 10px;
+    height: calc(100vh - 120px);
+    background-color: #F6F6F6;
 }
 
 .input-box {
     height: 40px;
-    padding-left: 20px;
-    padding-right: 20px;
+    /* padding-left: 20px;
+    padding-right: 20px; */
+}
+
+.login-wrapper {
+    width: 90%;
+}
+
+.login-panel {
+    background-color: #B4C6A6;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+}
+
+.main-info {
+    border-radius: 25px;
+    height: 100%;
+    padding: 10px;
+    padding-top: 20px;
+    background-color: #ffffff;
+}
+
+.main-info-title {
+    margin-bottom: 10px;
+}
+
+.my-avatar {
+    display: flex;
+}
+
+.union-background {
+    background-color: #B4C6A6;
+}
+
+.contact-view {
+    width: 100vw;
+    height: 100vh;
+}
+
+.contact-view-header {
+    margin-bottom: 20px;
+}
+
+.contact-view-body {
+    padding-top: 10px;
+    background-color: #ffffff;
+    height: 85%;
 }

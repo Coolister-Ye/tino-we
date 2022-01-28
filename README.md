@@ -1,7 +1,7 @@
 # Tino-We
 
 ## 项目简介
-Tino-We是一个基于开源IM(Instant Message)项目tinode-chat开发的微信小程序客户端，通过组件Component的形式部署在小程序应用中。现在Github上有很多基于微信小程序的IM应用，但很多应用都是半开源、或者是根据调用量进行收费的，不是很适合只想在小程序中快速搭建一个小型IM服务的项目。本项目想要实现一个轻量化的小程序IM方案，包括可以在云服务器轻松搭建的后端IM服务(Tinode-chat)和前端的Tino-We客户端。本项目还是建设中，功能不是很稳定，后续会不定期更新。
+Tino-We是一个基于开源IM(Instant Message)项目tinode-chat开发的微信小程序客户端，通过组件Component的形式部署在小程序应用中。现在Github上有很多基于微信小程序的IM应用，但很多应用都是半开源、或者是根据调用量进行收费的，不是很适合只想在小程序中快速搭建一个小型IM服务的项目。本项目想要实现一个轻量化的小程序IM方案，包括可以在云服务器轻松搭建的后端IM服务(Tinode-chat)和前端的Tino-We客户端。
 
 ## 快速开始
 ### 安装和使用
@@ -49,16 +49,17 @@ tinode-chat的安装可以参考[tinode的文档](https://github.com/tinode/chat
 
 #### 效果截图
 <div display="flex" style="padding=10px">
-  <img src="images/login.png" width=150/>
-  <img src="images/signup.png" width=150/>
-  <img src="images/contacts.png" width=150/>
-  <img src="images/search.png" width=150/>
-  <img src="images/chat.png" width=150/>
+  <img src="images/v1.0.2/login.png" width=150/>
+  <img src="images/v1.0.2/signup.png" width=150/>
+  <img src="images/v1.0.2/contacts.png" width=150/>
+  <img src="images/v1.0.2/search.png" width=150/>
+  <img src="images/v1.0.2/chat.png" width=150/>
 </div>
 
 #### 更新记录
 - v1.0.0 / 2022-01-24: 实现基础功能（登陆、新建用户、通过ID搜索好友、文字聊天）
 - v1.0.1 / 2022-01-24: 修复用户头像加载错误
+- v1.0.2 / 2022-01-28: 优化UI界面
 
 #### Licenses
 - 本项目可以用于学习、交流和非商业项目

@@ -10,6 +10,9 @@ const Drafty = Tinode.Drafty;
 
 // components/tinode-chat-wx/index.js
 Component({
+  options: {
+    styleIsolation: 'shared',
+  },
   /**
    * 组件的属性列表
    */
@@ -77,7 +80,9 @@ Component({
     // show archive contacts
     archive: false,
     // Upload avatar file
-    fileList: []
+    fileList: [],
+    // Login page title
+    mainInfoTitle: 'Sign In'
   },
 
   /**
@@ -355,7 +360,7 @@ Component({
     },
     // Derive State from chatlist object
     deriveStateFromChatlist(chatlist) {
-      const contacts = [];
+      var contacts = [];
       let unreadThreads = 0;
       let archivedCount = 0;
       chatlist.map((c) => {
@@ -380,6 +385,7 @@ Component({
           unreadThreads += c.unread > 0 ? 1 : 0;
         }
       });
+      
       return {
         chatList: contacts,
         unreadThreads: unreadThreads
@@ -486,6 +492,9 @@ Component({
       const avatarArrayBuffer = fs.readFileSync(file.url);
       const avatarBase64 = wx.arrayBufferToBase64(avatarArrayBuffer);
       this.setData({avatarData: avatarBase64, avatarType: file.url.split('.').pop(), fileList: [file]});
+    },
+    handleDeleteAvatar(evt) {
+      this.setData({avatarData: null, avatarType: null, fileList: []});
     },
     handleSubmit() {
       const loginLength = this.data.login.trim().length;
@@ -715,7 +724,10 @@ Component({
     },
     // Switch between login and signup panel
     onLoginSwitch(evt) {
-      this.setData({"sidePanelSelected": evt.target.dataset.name});
+      this.setData({
+        sidePanelSelected: evt.currentTarget.dataset.name,
+        mainInfoTitle: evt.currentTarget.dataset.name === 'login' ? 'Sign In' : 'Sign Up'
+      });
     },
     // Switch back
     onClickLeft() {
