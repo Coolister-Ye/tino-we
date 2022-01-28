@@ -49,11 +49,11 @@ tinode-chat的安装可以参考[tinode的文档](https://github.com/tinode/chat
 
 #### 效果截图
 <div display="flex" style="padding=10px">
-  <img src="images/v1.0.2/login.png" width=150/>
-  <img src="images/v1.0.2/signup.png" width=150/>
-  <img src="images/v1.0.2/contacts.png" width=150/>
-  <img src="images/v1.0.2/search.png" width=150/>
-  <img src="images/v1.0.2/chat.png" width=150/>
+  <img src="images/v1.0.2/login.jpeg" width=150/>
+  <img src="images/v1.0.2/signup.jpeg" width=150/>
+  <img src="images/v1.0.2/contacts.jpeg" width=150/>
+  <img src="images/v1.0.2/search.jpeg" width=150/>
+  <img src="images/v1.0.2/chat.jpeg" width=150/>
 </div>
 
 #### 更新记录
